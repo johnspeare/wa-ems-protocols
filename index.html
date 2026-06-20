@@ -67,45 +67,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
   transition:background .15s,color .15s}
 .tab.active,.tab:active{background:#fff;color:#0d47a1}
 
-/* Level filter row */
-.level-row{display:flex;align-items:center;gap:6px;padding:4px 14px 10px}
-.level-label{font-size:11px;font-weight:700;color:rgba(255,255,255,.6);
-  letter-spacing:.5px;text-transform:uppercase;flex-shrink:0}
-.lvbtn{
-  flex-shrink:0;border:2px solid rgba(255,255,255,.3);border-radius:20px;
-  padding:3px 12px;font-size:12px;font-weight:800;cursor:pointer;
-  background:transparent;color:rgba(255,255,255,.7);
-  transition:all .15s;letter-spacing:.3px}
-.lvbtn.active{color:#0d47a1;background:#fff;border-color:#fff}
-.lvbtn:not(.active):active{background:rgba(255,255,255,.2)}
-
-/* Level-based visibility in modal */
-/* Default: show everything */
-.lv{display:block}
-
-/* EMR mode: hide EMT-only and AEMT-only sections */
-body.lv-emr .emt-lv,
-body.lv-emr .sga-lv,
-body.lv-emr .iv-lv,
-body.lv-emr .aemt-lv{opacity:.35;pointer-events:none;position:relative}
-body.lv-emr .emt-lv::after,
-body.lv-emr .sga-lv::after,
-body.lv-emr .iv-lv::after,
-body.lv-emr .aemt-lv::after{
-  content:'Above EMR scope';position:absolute;inset:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:800;color:var(--txt2);
-  letter-spacing:.3px;pointer-events:none}
-
-/* EMT mode: hide AEMT-only (IV endorsement and up) */
-body.lv-emt .iv-lv,
-body.lv-emt .aemt-lv{opacity:.35;pointer-events:none;position:relative}
-body.lv-emt .iv-lv::after,
-body.lv-emt .aemt-lv::after{
-  content:'Requires IV endorsement / AEMT';position:absolute;inset:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:800;color:var(--txt2);
-  letter-spacing:.3px;pointer-events:none}
 
 /* Quick-access row */
 #quick{
@@ -305,13 +266,6 @@ h5.subsect{font-size:12px;font-weight:800;text-transform:uppercase;
     <button class="tab" data-s="procedures">Procedures</button>
     <button class="tab" data-s="medications">Medications</button>
     <button class="tab" data-s="admin">Admin</button>
-  </div>
-  <div class="level-row">
-    <span class="level-label">Level:</span>
-    <button class="lvbtn active" data-lv="all">All</button>
-    <button class="lvbtn" data-lv="lv-emr">EMR</button>
-    <button class="lvbtn" data-lv="lv-emt">EMT</button>
-    <button class="lvbtn" data-lv="lv-aemt">AEMT</button>
   </div>
 </div>
 
@@ -2684,25 +2638,6 @@ function applyDepartment(dept){
   activeDept = dept;
   render();
 }
-
-/* ── Provider level filter ── */
-let activeLevel = localStorage.getItem('providerLevel') || 'all';
-function applyLevel(lv){
-  // remove old level class from body
-  document.body.classList.remove('lv-emr','lv-emt','lv-aemt');
-  if(lv !== 'all') document.body.classList.add(lv);
-  activeLevel = lv;
-  localStorage.setItem('providerLevel', lv);
-  document.querySelectorAll('.lvbtn').forEach(b=>{
-    b.classList.toggle('active', b.dataset.lv === lv);
-  });
-}
-// restore saved level on load
-applyLevel(activeLevel);
-
-document.querySelectorAll('.lvbtn').forEach(btn=>{
-  btn.addEventListener('click',()=> applyLevel(btn.dataset.lv));
-});
 
 /* ── Filter tabs ── */
 document.querySelectorAll('.tab').forEach(btn=>{
