@@ -1,0 +1,2747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0d47a1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="WA Protocols">
+<meta name="description" content="Washington State 2024 BLS/ILS Protocol Guidance — EMR, EMT, AEMT">
+<title>WA BLS/ILS 2024</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.svg">
+<style>
+:root{
+  --med:#1565c0;--tra:#c62828;--pro:#6a1b9a;--meds:#2e7d32;--adm:#455a64;
+  --emr:#546e7a;--emt:#1565c0;--aemt:#6a1b9a;--sga:#00695c;--iv:#e65100;--con:#37474f;
+  --als:#e65100;
+  --bg:#f0f4f8;--card:#fff;--txt:#1a1a2e;--txt2:#546e7a;--bdr:#dde3ec;
+  --hdr:#0d47a1;--hdr-txt:#fff;
+  --radius:12px;--shadow:0 2px 8px rgba(0,0,0,.1);
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#0d1117;--card:#161b27;--txt:#e8eaf6;--txt2:#8fa3b1;--bdr:#2a3240;
+  }
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  background:var(--bg);color:var(--txt);min-height:100vh;
+  padding-bottom:env(safe-area-inset-bottom)}
+
+/* ── Header ── */
+#hdr{
+  position:sticky;top:0;z-index:100;
+  background:var(--hdr);color:var(--hdr-txt);
+  padding:env(safe-area-inset-top) 0 0;
+  box-shadow:0 2px 12px rgba(0,0,0,.3);
+}
+.hdr-top{display:flex;align-items:center;gap:10px;padding:10px 14px 8px}
+.app-icon{font-size:28px;line-height:1}
+.app-name{font-size:17px;font-weight:700;line-height:1.1}
+.app-sub{font-size:11px;opacity:.75;margin-top:1px}
+
+/* Search */
+.search-wrap{display:flex;align-items:center;gap:0;
+  background:#fff;border-radius:10px;overflow:hidden;
+  margin:0 14px 8px;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+#search{
+  flex:1;border:none;outline:none;padding:10px 12px;
+  font-size:16px;background:transparent;color:#1a1a2e;
+  -webkit-appearance:none}
+#search::placeholder{color:#90a4ae}
+#sclear{border:none;background:none;padding:0 12px;font-size:18px;
+  color:#90a4ae;cursor:pointer;line-height:1}
+
+/* Filter tabs */
+.tabs{display:flex;overflow-x:auto;gap:6px;padding:0 14px 6px;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  flex-shrink:0;border:none;border-radius:20px;padding:5px 14px;
+  font-size:13px;font-weight:600;cursor:pointer;
+  background:rgba(255,255,255,.15);color:rgba(255,255,255,.85);
+  transition:background .15s,color .15s}
+.tab.active,.tab:active{background:#fff;color:#0d47a1}
+
+/* Level filter row */
+.level-row{display:flex;align-items:center;gap:6px;padding:4px 14px 10px}
+.level-label{font-size:11px;font-weight:700;color:rgba(255,255,255,.6);
+  letter-spacing:.5px;text-transform:uppercase;flex-shrink:0}
+.lvbtn{
+  flex-shrink:0;border:2px solid rgba(255,255,255,.3);border-radius:20px;
+  padding:3px 12px;font-size:12px;font-weight:800;cursor:pointer;
+  background:transparent;color:rgba(255,255,255,.7);
+  transition:all .15s;letter-spacing:.3px}
+.lvbtn.active{color:#0d47a1;background:#fff;border-color:#fff}
+.lvbtn:not(.active):active{background:rgba(255,255,255,.2)}
+
+/* Level-based visibility in modal */
+/* Default: show everything */
+.lv{display:block}
+
+/* EMR mode: hide EMT-only and AEMT-only sections */
+body.lv-emr .emt-lv,
+body.lv-emr .sga-lv,
+body.lv-emr .iv-lv,
+body.lv-emr .aemt-lv{opacity:.35;pointer-events:none;position:relative}
+body.lv-emr .emt-lv::after,
+body.lv-emr .sga-lv::after,
+body.lv-emr .iv-lv::after,
+body.lv-emr .aemt-lv::after{
+  content:'Above EMR scope';position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;color:var(--txt2);
+  letter-spacing:.3px;pointer-events:none}
+
+/* EMT mode: hide AEMT-only (IV endorsement and up) */
+body.lv-emt .iv-lv,
+body.lv-emt .aemt-lv{opacity:.35;pointer-events:none;position:relative}
+body.lv-emt .iv-lv::after,
+body.lv-emt .aemt-lv::after{
+  content:'Requires IV endorsement / AEMT';position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;color:var(--txt2);
+  letter-spacing:.3px;pointer-events:none}
+
+/* Quick-access row */
+#quick{
+  display:flex;overflow-x:auto;gap:8px;padding:10px 14px;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch;background:var(--card);
+  border-bottom:1px solid var(--bdr)}
+#quick::-webkit-scrollbar{display:none}
+.qbtn{
+  flex-shrink:0;border:none;border-radius:8px;padding:7px 13px;
+  font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.3px;
+  transition:opacity .1s}
+.qbtn:active{opacity:.7}
+.q-cardiac{background:#c62828;color:#fff}
+.q-stroke{background:#6a1b9a;color:#fff}
+.q-ana{background:#e65100;color:#fff}
+.q-chest{background:#1565c0;color:#fff}
+.q-od{background:#2e7d32;color:#fff}
+.q-trauma{background:#4e342e;color:#fff}
+.q-airway{background:#00695c;color:#fff}
+.q-diabetic{background:#f57f17;color:#fff}
+
+/* ── Card list ── */
+#list{
+  display:grid;gap:10px;padding:12px 14px;
+  grid-template-columns:1fr}
+@media(min-width:600px){#list{grid-template-columns:1fr 1fr}}
+@media(min-width:1000px){#list{grid-template-columns:1fr 1fr 1fr;max-width:1100px;margin:0 auto}}
+
+.card{
+  background:var(--card);border-radius:var(--radius);
+  box-shadow:var(--shadow);border:1px solid var(--bdr);
+  overflow:hidden;cursor:pointer;transition:transform .1s,box-shadow .1s;
+  -webkit-tap-highlight-color:transparent}
+.card:active{transform:scale(.98);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+
+.card-hdr{padding:10px 14px 8px;display:flex;align-items:center;gap:8px}
+.sec-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.card-title{font-size:15px;font-weight:700;flex:1;line-height:1.2}
+.card-title mark{background:#fff59d;color:#000;border-radius:2px;padding:0 1px}
+.sec-badge{
+  font-size:10px;font-weight:800;letter-spacing:.5px;
+  padding:2px 7px;border-radius:10px;color:#fff;flex-shrink:0}
+
+/* section colors */
+.c-medical .card-hdr{border-left:4px solid var(--med)}
+.c-medical .sec-dot{background:var(--med)}
+.c-medical .sec-badge{background:var(--med)}
+.c-trauma .card-hdr{border-left:4px solid var(--tra)}
+.c-trauma .sec-dot{background:var(--tra)}
+.c-trauma .sec-badge{background:var(--tra)}
+.c-procedures .card-hdr{border-left:4px solid var(--pro)}
+.c-procedures .sec-dot{background:var(--pro)}
+.c-procedures .sec-badge{background:var(--pro)}
+.c-medications .card-hdr{border-left:4px solid var(--meds)}
+.c-medications .sec-dot{background:var(--meds)}
+.c-medications .sec-badge{background:var(--meds)}
+.c-admin .card-hdr{border-left:4px solid var(--adm)}
+.c-admin .sec-dot{background:var(--adm)}
+.c-admin .sec-badge{background:var(--adm)}
+
+.card-tags{display:flex;flex-wrap:wrap;gap:4px;padding:0 14px 10px}
+.tag{font-size:11px;padding:2px 7px;border-radius:10px;
+  background:var(--bg);color:var(--txt2);border:1px solid var(--bdr)}
+
+.no-results{padding:40px 20px;text-align:center;color:var(--txt2);font-size:16px}
+
+/* ── Modal / Detail view ── */
+#modal{
+  position:fixed;inset:0;z-index:200;
+  background:var(--bg);overflow-y:auto;
+  transform:translateX(100%);transition:transform .25s ease;
+  -webkit-overflow-scrolling:touch}
+#modal:not([hidden]){transform:translateX(0)}
+#modal[hidden]{display:block!important;pointer-events:none}
+
+.modal-hdr{
+  position:sticky;top:0;z-index:10;
+  background:var(--hdr);color:#fff;
+  padding:env(safe-area-inset-top) 14px 10px;
+  display:flex;align-items:center;gap:10px;
+  box-shadow:0 2px 8px rgba(0,0,0,.2)}
+#back-btn{
+  border:none;background:none;color:#fff;font-size:22px;
+  cursor:pointer;padding:4px 8px 4px 0;line-height:1;flex-shrink:0}
+#modal-title{font-size:16px;font-weight:700;flex:1;line-height:1.2}
+#modal-badge{
+  font-size:10px;font-weight:800;letter-spacing:.5px;
+  padding:2px 8px;border-radius:10px;color:#fff;flex-shrink:0}
+
+.modal-body{padding:14px}
+
+/* ── Protocol content styles ── */
+.als-note{
+  background:#fff3e0;border:1px solid #ffb74d;color:#bf360c;
+  border-radius:8px;padding:8px 12px;margin-bottom:12px;
+  font-size:12px;font-weight:600;display:flex;gap:6px;align-items:flex-start}
+@media(prefers-color-scheme:dark){
+  .als-note{background:#2d1a00;border-color:#8d4a00;color:#ffb74d}}
+
+/* Assessment grid */
+.assess{
+  display:grid;gap:8px;margin-bottom:12px;
+  grid-template-columns:1fr}
+@media(min-width:480px){.assess{grid-template-columns:1fr 1fr 1fr}}
+.assess-col{
+  background:var(--card);border-radius:8px;border:1px solid var(--bdr);overflow:hidden}
+.assess-head{
+  font-size:12px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;
+  padding:6px 10px;background:var(--bg);border-bottom:1px solid var(--bdr);color:var(--txt2)}
+.assess-col ul{padding:8px 10px 8px 24px;font-size:13px;line-height:1.5}
+.assess-col li{padding:1px 0}
+.assess-col li.b{font-weight:700;color:var(--txt)}
+.sample-note{font-size:12px;font-weight:700;color:var(--txt2);
+  padding:6px 10px 2px;font-style:italic}
+
+/* Management levels */
+.mgmt{display:flex;flex-direction:column;gap:8px}
+.lv{border-radius:8px;border:1px solid var(--bdr);overflow:hidden}
+.lv-tag{
+  font-size:12px;font-weight:800;letter-spacing:.4px;
+  padding:6px 12px;display:flex;align-items:center;gap:6px}
+.lv ul{padding:8px 12px 10px 28px;font-size:13px;line-height:1.6}
+.lv li{padding:1px 0}
+.lv ul ul{margin-top:2px;padding-left:16px;font-size:12px;color:var(--txt2)}
+
+/* Level colors */
+.emr-lv{border-color:#78909c}.emr-tag{background:#eceff1;color:#37474f}
+.emt-lv{border-color:#90caf9}.emt-tag{background:#e3f2fd;color:#0d47a1}
+.sga-lv{border-color:#80cbc4}.sga-tag{background:#e0f2f1;color:#004d40}
+.iv-lv{border-color:#ffb74d}.iv-tag{background:#fff8e1;color:#e65100}
+.aemt-lv{border-color:#ce93d8}.aemt-tag{background:#f3e5f5;color:#4a148c}
+.consider-lv{border-color:#a5d6a7}.consider-tag{background:#e8f5e9;color:#1b5e20}
+.peds-lv{border-color:#f48fb1}.peds-tag{background:#fce4ec;color:#880e4f}
+.transport-lv{border-color:#90a4ae}.transport-tag{background:#eceff1;color:#37474f}
+
+@media(prefers-color-scheme:dark){
+  .emr-tag{background:#1c2830;color:#90a4ae}
+  .emt-tag{background:#0a1929;color:#90caf9}
+  .sga-tag{background:#00251a;color:#80cbc4}
+  .iv-tag{background:#2d1a00;color:#ffb74d}
+  .aemt-tag{background:#1a0030;color:#ce93d8}
+  .consider-tag{background:#0a1f0a;color:#a5d6a7}
+  .peds-tag{background:#2d0016;color:#f48fb1}
+  .transport-tag{background:#1c2830;color:#90a4ae}
+}
+
+/* W* badges */
+.ws{display:inline-block;background:#e65100;color:#fff;
+  font-size:10px;font-weight:800;padding:1px 5px;border-radius:4px;
+  margin-right:4px;vertical-align:middle;letter-spacing:.3px}
+.wdbl{display:inline-block;background:#4a148c;color:#fff;
+  font-size:10px;font-weight:800;padding:1px 5px;border-radius:4px;
+  margin-right:4px;vertical-align:middle;letter-spacing:.3px}
+
+/* Misc content */
+.proto-note{
+  background:var(--bg);border-left:3px solid var(--als);
+  padding:8px 12px;border-radius:0 8px 8px 0;
+  font-size:13px;margin-bottom:8px;color:var(--txt)}
+.dose-table{width:100%;border-collapse:collapse;font-size:13px;margin:6px 0}
+.dose-table th{background:var(--bg);padding:5px 8px;text-align:left;
+  font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--txt2)}
+.dose-table td{padding:5px 8px;border-top:1px solid var(--bdr)}
+.dose-table tr:nth-child(even) td{background:var(--bg)}
+h5.subsect{font-size:12px;font-weight:800;text-transform:uppercase;
+  letter-spacing:.5px;color:var(--txt2);margin:10px 0 4px}
+
+/* Back to top */
+#topbtn{
+  position:fixed;bottom:calc(20px + env(safe-area-inset-bottom));right:16px;
+  z-index:150;width:44px;height:44px;border-radius:50%;
+  background:var(--hdr);color:#fff;border:none;font-size:20px;
+  cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3);
+  display:flex;align-items:center;justify-content:center}
+#topbtn[hidden]{display:none}
+</style>
+</head>
+<body>
+
+<div id="hdr">
+  <div class="hdr-top">
+    <div class="app-icon">🚑</div>
+    <div>
+      <div class="app-name">WA BLS/ILS Protocols</div>
+      <div class="app-sub">2024 · EMR · EMT · AEMT · DOH 530-281</div>
+    </div>
+  </div>
+  <div class="search-wrap">
+    <input id="search" type="search" placeholder="Search protocols, meds, symptoms…"
+      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    <button id="sclear" hidden aria-label="Clear">✕</button>
+  </div>
+  <div class="tabs">
+    <button class="tab active" data-s="all">All</button>
+    <button class="tab" data-s="medical">Medical</button>
+    <button class="tab" data-s="trauma">Trauma</button>
+    <button class="tab" data-s="procedures">Procedures</button>
+    <button class="tab" data-s="medications">Medications</button>
+    <button class="tab" data-s="admin">Admin</button>
+  </div>
+  <div class="level-row">
+    <span class="level-label">Level:</span>
+    <button class="lvbtn active" data-lv="all">All</button>
+    <button class="lvbtn" data-lv="lv-emr">EMR</button>
+    <button class="lvbtn" data-lv="lv-emt">EMT</button>
+    <button class="lvbtn" data-lv="lv-aemt">AEMT</button>
+  </div>
+</div>
+
+<div id="quick">
+  <button class="qbtn q-cardiac" data-goto="cardiac-arrest-adult">🫀 Cardiac Arrest</button>
+  <button class="qbtn q-stroke" data-goto="stroke">🧠 Stroke</button>
+  <button class="qbtn q-ana" data-goto="anaphylaxis">⚠️ Anaphylaxis</button>
+  <button class="qbtn q-chest" data-goto="chest-pain">💔 Chest Pain/ACS</button>
+  <button class="qbtn q-od" data-goto="overdose">💊 Overdose</button>
+  <button class="qbtn q-trauma" data-goto="trauma-general">🩹 Gen Trauma</button>
+  <button class="qbtn q-airway" data-goto="respiratory-distress">🫁 Airway/Resp</button>
+  <button class="qbtn q-diabetic" data-goto="diabetic-emergency">🩸 Diabetic</button>
+</div>
+
+<div id="list"></div>
+
+<!-- Detail overlay -->
+<div id="modal" hidden>
+  <div class="modal-hdr">
+    <button id="back-btn" onclick="closeModal()">&#8592;</button>
+    <div id="modal-title"></div>
+    <div id="modal-badge"></div>
+  </div>
+  <div class="modal-body" id="modal-body"></div>
+</div>
+
+<button id="topbtn" hidden aria-label="Back to top">↑</button>
+
+<script>
+/* ── Protocol data ── */
+const PROTOCOLS = [
+// PROTOCOLS_START
+{id:'universal-patient-care',title:'Universal Patient Care Protocol',section:'admin',
+tags:'UPC scene safety BSI airway breathing circulation assessment vitals oxygen transport',
+body:`<div class="proto-note">⚑ Referenced by every protocol — initiate first on all patients.</div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">ALL LEVELS — Sequential Steps</div><ul>
+<li><strong>Scene Safety / BSI</strong> — safe scene, appropriate PPE</li>
+<li><strong>MOI / NOI</strong> — mechanism of injury or nature of illness</li>
+<li><strong>Primary Assessment (ABCDE)</strong><ul>
+<li>A — Airway: open, maintain, protect</li>
+<li>B — Breathing: rate, quality; O₂ to maintain SpO₂ 94–99%</li>
+<li>C — Circulation: pulse rate/quality, skin, hemorrhage control</li>
+<li>D — Disability: LOC (AVPU/GCS), pupils, blood glucose <span class="ws">W*</span></li>
+<li>E — Expose / Environment: full exam, prevent hypothermia</li></ul></li>
+<li><strong>Vital Signs</strong> — BP, HR, RR, SpO₂, temp, glucose as indicated</li>
+<li><strong>Transport Decision</strong> — priority, destination per local protocols</li>
+<li><strong>Secondary Assessment</strong> — SAMPLE, OPQRST, head-to-toe en route</li>
+<li><strong>Reassess</strong> — unstable: q5 min; stable: q15 min</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Key Principles</div><ul>
+<li>If protocols do not cover the situation, consult online medical control</li>
+<li>Always do what is right for the patient within your scope of practice</li>
+<li>Document all findings, interventions, and patient responses on PCR</li></ul></div></div>`},
+
+{id:'withholding-resuscitation',title:'Withholding / Terminating Resuscitation',section:'admin',
+tags:'DNR POLST living will terminate withhold resuscitation CPR death irreversible',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Withhold — Signs of Irreversible Death (ANY one sufficient)</div><ul>
+<li>Rigor mortis &nbsp;|&nbsp; Incineration &nbsp;|&nbsp; Decomposition &nbsp;|&nbsp; Decapitation</li>
+<li>Lividity &nbsp;|&nbsp; Evisceration of the heart</li>
+<li>External brain matter with absence of vital signs</li>
+<li>CPR would place rescuer at risk of serious injury or mortal peril</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Terminate — Medical Cardiac Arrest</div><ul>
+<li>&gt;40 min high-quality CPR: witnessed collapse OR remains in shockable rhythm</li>
+<li>&gt;25 min high-quality CPR: unwitnessed arrest, non-shockable rhythm</li>
+<li>EtCO₂ may monitor CPR effectiveness (if available)</li>
+<li><strong>Transport with CPR if:</strong> drug OD, drowning, hypothermia, refractory shockable rhythm, age ≤30, lightning strike, or circumstances require transport</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">Trauma Cardiac Arrest</div><ul>
+<li>May withhold if pulseless, apneic, no witnessed signs of life on EMS arrival</li>
+<li>Pediatric: consider contacting online medical control</li></ul></div>
+<div class="lv aemt-lv"><div class="lv-tag aemt-tag">Advanced Directives</div><ul>
+<li>POLST "Comfort-Focused Treatment" → do not initiate full resuscitation</li>
+<li>Living will should be honored if present</li>
+<li>Compelling reasons to withhold: terminal condition AND patient expressed no resuscitation wish</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Documentation Required</div><ul>
+<li>Contact online medical control before terminating efforts</li>
+<li>Notify Medical Examiner (ME) and/or Law Enforcement (LE)</li>
+<li>All documentation on PCR; copy to ME's office</li></ul></div></div>`},
+
+{id:'abdominal-pain',title:'Abdominal / Back / Flank Pain (Non-Traumatic)',section:'medical',
+tags:'abdominal back flank pain AAA appendicitis bowel ectopic pregnancy GI kidney stones nausea',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
+<div class="assess">
+<div class="assess-col"><div class="assess-head">History</div>
+<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<li>Allergies, medications</li><li>Past medical/surgical history</li>
+<li>Last meal; last bowel movement/emesis</li>
+<li>Onset, Palliation/Provocation</li><li>Quality (crampy, constant, sharp)</li>
+<li>Region / Radiation / Referred</li><li>Severity (1–10); Time</li>
+<li>Menstrual history / pregnancy</li></ul></div>
+<div class="assess-col"><div class="assess-head">Signs / Symptoms</div><ul>
+<li class="b">Abnormal vital signs</li><li class="b">Chest pain</li>
+<li>Constipation; Diarrhea; Dysuria</li><li>Fever; Nausea</li>
+<li>Pain (location/migration)</li><li class="b">Pregnancy</li>
+<li class="b">Pulsating mass</li><li class="b">Shortness of breath</li>
+<li>Tenderness; Vomiting</li><li class="b">Vaginal bleeding</li></ul></div>
+<div class="assess-col"><div class="assess-head">Differential</div><ul>
+<li>AAA; Appendicitis</li><li>Bowel obstruction</li>
+<li>Cardiac (MI); Cholecystitis</li><li>Diverticulitis</li>
+<li>Ectopic pregnancy; GI bleed</li><li>Kidney stones / infection</li>
+<li>Pancreatitis; Pregnancy (ectopic?)</li></ul></div></div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Initiate Universal Patient Care protocol</li>
+<li>Position of comfort</li>
+<li>SBP &lt;90 mmHg → treat per Shock/Hypotension protocol; consider rapid transport</li>
+<li>Do not allow patient to eat or drink</li>
+<li>Treat nausea/vomiting per Nausea/Vomiting protocol</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li>Consider ECG / 12-lead if available</li>
+<li>Treat pain per Pain Management protocol</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Consider Vascular Access</li></ul></div>
+<div class="lv peds-lv"><div class="lv-tag peds-tag">Pediatric Considerations</div><ul>
+<li>Consider non-accidental trauma</li>
+<li>Monitor closely — BP may drop quickly; treat per Shock/Hypotension if indicated</li>
+<li>Lowest normal pediatric SBP: &lt;1 mo &gt;60 mmHg; 1 mo–1 yr &gt;70 mmHg; &gt;1 yr: 70 + (2 × age in years)</li></ul></div></div>`},
+
+{id:'anaphylaxis',title:'Allergic Reaction / Anaphylaxis',section:'medical',
+tags:'anaphylaxis allergic reaction epinephrine epi hives angioedema stridor shock benadryl albuterol diphenhydramine',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
+<div class="assess">
+<div class="assess-col"><div class="assess-head">History</div>
+<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<li>History of anaphylaxis</li><li>Prescribed / use of EpiPen</li>
+<li>Known allergy / exposure (insect sting, bite)</li>
+<li>New clothing, soap, detergent</li></ul></div>
+<div class="assess-col"><div class="assess-head">Signs / Symptoms</div><ul>
+<li class="b">Altered Mental Status</li>
+<li class="b">Angioedema, hoarseness, difficulty swallowing</li>
+<li>Anxiety; Diaphoresis; Hives</li>
+<li class="b">Hypotension / Shock</li>
+<li>Itching / Rash; Nausea/vomiting/diarrhea; Pale</li>
+<li class="b">Shortness of breath, wheezing, stridor, hypoxia</li></ul></div>
+<div class="assess-col"><div class="assess-head">Differential</div><ul>
+<li>Asthma or COPD</li><li>Aspiration / airway obstruction</li>
+<li>Angioedema (drug-induced: lisinopril)</li><li>Anxiety</li></ul></div></div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Initiate Universal Patient Care protocol</li>
+<li>Assess for signs/symptoms of allergic reaction</li>
+<li>Severe reaction with ANGIOEDEMA/STRIDOR and/or Shock → Epinephrine Auto-Injector per manufacturer guidelines (adult/pediatric)</li>
+<li><span class="ws">W*</span> Allergic reaction WITH WHEEZING → assist patient in administering own MDI</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li><strong>Adult:</strong><ul>
+<li><span class="ws">W*</span> Epi 1 mg/mL — 0.3 mg IM outer thigh; may repeat ×1 after 5 min</li>
+<li><span class="ws">W*</span> Diphenhydramine 50 mg PO OR Cetirizine 10 mg PO</li>
+<li><span class="ws">W*</span> Wheezing → Albuterol 2.5 mg in 3.0 mL via nebulizer or MDI; and/or Atrovent 0.5 mg in 2.5 mL via nebulizer; or DuoNeb</li></ul></li>
+<li><strong>Pediatric:</strong><ul>
+<li><span class="ws">W*</span> Epi 0.15 mg (1 mg/mL) IM OR 0.01 mg/kg IM (max single dose 0.3 mg)</li>
+<li><span class="ws">W*</span> Albuterol: &lt;15 kg → 2.5–5 mg; &gt;15 kg → 5–10 mg via neb for wheezes</li>
+<li><span class="ws">W*</span> Diphenhydramine 1 mg/kg PO (max 25 mg) OR Cetirizine: 2.5 mg PO 6 mo–5 yr; 5 mg PO 6–12 yr; 10 mg PO 13–18 yr</li></ul></li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement</div><ul>
+<li>Consider Vascular Access</li>
+<li>Adult SBP &lt;90 mmHg → treat per Shock/Hypotension protocol</li>
+<li>Adult hypoperfusion → fluid challenge 500 mL LR/NS; repeat as needed, max 2,000 mL</li>
+<li>Pediatric below min acceptable BP → Shock/Hypotension; fluid bolus 20 mL/kg LR/NS (max 60 mL/kg)</li></ul></div>
+<div class="lv aemt-lv"><div class="lv-tag aemt-tag">AEMT</div><ul>
+<li>Diphenhydramine 1 mg/kg IV (IM if no IV) / PO — adult max 50 mg; pediatric max 50 mg</li>
+<li>Epinephrine 0.3 mg (1 mg/mL) IM OR 0.01 mg/kg (1 mg/mL) IM max 0.3 mg</li></ul></div></div>`},
+
+{id:'cardiac-arrest-adult',title:'Cardiac Arrest – Adult',section:'medical',
+tags:'cardiac arrest CPR AED pulseless VFib PEA asystole resuscitation epinephrine defibrillation',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
+<div class="assess">
+<div class="assess-col"><div class="assess-head">History</div>
+<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<li>Events leading to arrest</li><li>Estimated downtime / bystander CPR</li>
+<li>POLST, DNI/R or Living Will</li>
+<li>Hx: CP/SOB (Thrombosis: Pulmonary/MI or Tamponade)</li>
+<li>Hx: HTN (Thrombosis: Pulmonary/MI)</li>
+<li>Hx: Illicit Drug Use / Accidental OD</li>
+<li>Hx: Dialysis / Renal Failure (Hyperkalemia)</li></ul></div>
+<div class="assess-col"><div class="assess-head">Signs / Symptoms</div><ul>
+<li>Absent heart sounds on auscultation</li>
+<li class="b">Apnea / Agonal Respirations</li>
+<li class="b">Pulseless</li><li class="b">Unresponsive</li></ul></div>
+<div class="assess-col"><div class="assess-head">Differential — Hs &amp; Ts</div><ul>
+<li>Hypovolemia; Hypoxia</li>
+<li>Hydrogen Ions (Acidosis)</li>
+<li>Hyper/Hypokalemia; Hyper/Hypoglycemia</li>
+<li>Hypothermia; Toxins (overdose)</li>
+<li>Tamponade, cardiac</li>
+<li>Tension Pneumothorax; Thrombosis</li>
+<li>AMS; Coma; Myxedema coma</li></ul></div></div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR / EMT</div><ul>
+<li>Initiate Universal Patient Care protocol</li>
+<li>Establish unresponsiveness; identify absence of pulse and respiration</li>
+<li>High-quality CPR with minimal interruption<ul>
+<li>2 min cycles, &lt;10 sec pause; rotate compressor q2 min; monitor rate, depth, no leaning</li></ul></li>
+<li>Apply AED/EKG leads/defib pads; analyze and follow AED/monitor instructions</li></ul></div>
+<div class="lv sga-lv"><div class="lv-tag sga-tag">EMT w/ SGA Endorsement</div><ul>
+<li>SGA with 100% O₂</li>
+<li><span class="ws">W*</span> Consider End-Tidal CO₂, if available</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement</div><ul>
+<li>Consider Vascular Access</li>
+<li>Hypovolemic shock cause → volume resuscitation 20 mL/kg LR/NS</li></ul></div>
+<div class="lv aemt-lv"><div class="lv-tag aemt-tag">AEMT</div><ul>
+<li><span class="ws">W*</span> Asystole / PEA (no shock) OR V-Fib / Pulseless V-Tach (shock advised):<br>Epinephrine 1 mg (1 mg/10 mL) IV/IO q 3–5 min</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">General Considerations</div><ul>
+<li>High Performance CPR: Monophasic 360 J or Biphasic device-specific equivalent (unknown → 200 J)</li>
+<li>Not responding → consider Withholding/Terminating Resuscitation protocol</li>
+<li>Spontaneous resuscitation → see Cardiac Arrest – Adult ROSC protocol</li></ul></div></div>`},
+
+{id:'cardiac-arrest-adult-rosc',title:'Cardiac Arrest – Adult ROSC',section:'medical',
+tags:'ROSC return spontaneous circulation post arrest cardiac CPR resuscitation',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
+<div class="assess">
+<div class="assess-col"><div class="assess-head">History</div><ul>
+<li>Events leading to arrest</li><li>Estimated downtime / bystander CPR</li>
+<li>POLST, DNI/R or Living Will</li>
+<li>Hx: CP/SOB; HTN; Illicit Drug Use; Dialysis/Renal Failure</li></ul></div>
+<div class="assess-col"><div class="assess-head">Signs / Symptoms</div><ul>
+<li>Sudden increase in EtCO₂</li>
+<li>Return of pulse; return of normal respirations</li>
+<li>Patient has spontaneous movement</li></ul></div>
+<div class="assess-col"><div class="assess-head">Differential — Hs &amp; Ts</div><ul>
+<li>Hypovolemia; Hypoxia; H⁺ (Acidosis)</li>
+<li>Hyper/Hypokalemia; Hyper/Hypoglycemia</li>
+<li>Hypothermia; Toxins; Tamponade</li>
+<li>Tension Pneumothorax; Thrombosis</li>
+<li>AMS; Coma; Myxedema coma</li></ul></div></div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Initiate Universal Patient Care protocol</li>
+<li>Optimize ventilation and oxygenation</li>
+<li>Titrate O₂ to target SpO₂ 94–99%</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li>Consider ECG / 12-lead if available</li></ul></div>
+<div class="lv sga-lv"><div class="lv-tag sga-tag">EMT w/ SGA Endorsement</div><ul>
+<li>SGA with 100% O₂ to achieve target SpO₂ 94–99%</li>
+<li><span class="ws">W*</span> Consider EtCO₂ (normal 35–40 mmHg); do NOT hyperventilate (ideal rate 10–12/min)</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Consider Vascular Access</li>
+<li>SBP &lt;90 mmHg → treat per Shock/Hypotension protocol</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">General Considerations</div><ul>
+<li>Transport all ROSC patients to closest hospital with interventional capability per local criteria</li>
+<li>Observe for sustained stability before transport — 5–10 min adequate for packaging/loading</li></ul></div></div>`},
+
+{id:'chest-pain',title:'Chest Pain / ACS / MI / STEMI',section:'medical',
+tags:'chest pain ACS MI STEMI heart attack angina nitroglycerin aspirin ECG cardiac NSTEMI',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
+<div class="assess">
+<div class="assess-col"><div class="assess-head">History</div>
+<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<li>Time of onset; Palliation/Provocation</li>
+<li>Quality (crampy, constant, sharp, dull)</li>
+<li>Region / Radiation / Referred; Severity (1–10); Time</li>
+<li>Viagra, Cialis, Levitra use (male or female)</li></ul></div>
+<div class="assess-col"><div class="assess-head">Signs / Symptoms</div><ul>
+<li class="b">Abnormal vital signs</li>
+<li class="b">CP — pain, pressure, aching, tightness</li>
+<li class="b">Dizziness; Nausea, vomiting</li>
+<li class="b">Pale, diaphoresis</li>
+<li class="b">Radiation of pain</li>
+<li class="b">Shortness of breath</li></ul></div>
+<div class="assess-col"><div class="assess-head">Differential</div><ul>
+<li>Aortic dissection / aneurysm</li>
+<li>Asthma / COPD; Chest wall injury</li>
+<li>Esophageal spasm; GE reflux; Hiatal hernia</li>
+<li>Pericarditis; Pleural pain; Pneumothorax</li>
+<li>Pulmonary embolism; Trauma vs. Medical</li></ul></div></div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Initiate Universal Patient Care protocol</li>
+<li>Titrate O₂ to target SpO₂ 94–99%</li>
+<li><span class="ws">W*</span> Aspirin 324 mg PO</li>
+<li>Calculate High Risk Score per Prehospital Cardiac Triage Destination Procedure</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li>Consider ECG / 12-lead if available</li>
+<li><span class="ws">W*</span> Consider End-Tidal CO₂ if available</li>
+<li>If SBP &gt;100: <span class="ws">W*</span> Nitroglycerin 0.4 mg SL; may repeat ×2 every 3–5 min (patient's own NTG)</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement</div><ul>
+<li>Consider Vascular Access (before NTG administration)</li>
+<li>SBP &lt;90 mmHg → treat per Shock/Hypotension protocol</li></ul></div>
+<div class="lv aemt-lv"><div class="lv-tag aemt-tag">AEMT</div><ul>
+<li>Nitroglycerin 0.4 mg SL; may repeat ×2 every 3–5 min OR Nitro Paste 1 inch to chest wall</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">General Considerations</div><ul>
+<li>Transport to closest hospital with interventional capability per local criteria</li>
+<li>Follow State of Washington Prehospital Cardiac Triage and Destination Procedure</li>
+<li>Do NOT give NTG if patient used Viagra/Cialis/Levitra within 24–48 hours</li></ul></div>
+<div class="lv transport-lv"><div class="lv-tag transport-tag">High Risk Criteria (4+ = High Risk)</div><ul>
+<li>Age ≥55; 3+ CAD risk factors (family hx, HTN, high cholesterol, diabetes, current smoker)</li>
+<li>Aspirin use in last 7 days; 2+ anginal events in past 24 hours</li>
+<li>Known coronary disease; ST deviation ≥0.5; Elevated cardiac markers</li></ul></div></div>`},
+
+{id:'diabetic-emergency',title:'Diabetic Emergency',section:'medical',
+tags:'diabetic hypoglycemia hyperglycemia glucose insulin DKA blood sugar oral glucose D10 glucagon',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
+<div class="assess">
+<div class="assess-col"><div class="assess-head">History</div>
+<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<li>Medications (Oral vs. Insulin); Insulin pump</li>
+<li>Alterations or missed doses; Last meal</li>
+<li>Recent illness; Illicit drug use / toxicingestion</li>
+<li>History of trauma; GI history; Syncope</li></ul></div>
+<div class="assess-col"><div class="assess-head">Signs / Symptoms</div><ul>
+<li class="b">Abnormal vital signs persist</li>
+<li>Decreased / Bizarre mental status</li>
+<li class="b">Hyperglycemia: warm, dry skin, fruity breath, Kussmaul resp, dehydration signs</li>
+<li>Hypoglycemia: cool, diaphoretic skin</li>
+<li class="b">Shortness of breath; Syncope</li></ul></div>
+<div class="assess-col"><div class="assess-head">Differential</div><ul>
+<li>Hypovolemia; Hypoxia; H⁺ (Acidosis)</li>
+<li>Hyper/Hypoglycemia; Hyper/Hypokalemia</li>
+<li>Hypothermia; Toxins; Tamponade</li>
+<li>Tension Pneumothorax; Thrombosis</li></ul></div></div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Initiate Universal Patient Care protocol</li>
+<li><span class="ws">W*</span> Check blood glucose level</li>
+<li><strong>HYPOGLYCEMIA (&lt;60 mg/dL) — patient can protect airway:</strong><ul>
+<li><span class="ws">W*</span> Adult: oral glucose 25 g (one tube)</li>
+<li><span class="ws">W*</span> Pediatric: oral glucose 0.5–1 g/kg, max 25 g</li>
+<li>Check BGL after 5 min; repeat if still low and symptomatic</li></ul></li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li>Check blood glucose level</li>
+<li><strong>HYPOGLYCEMIA (&lt;60 mg/dL — patient can protect airway):</strong><ul>
+<li>Oral glucose — one tube</li>
+<li><span class="ws">W*</span> Adult: Glucagon 1 mg (1 unit) IM/IN</li>
+<li><span class="ws">W*</span> Pediatric: Glucagon 0.02 mg/kg IM (max 1 mg)</li></ul></li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Consider Vascular Access</li>
+<li>SBP &lt;90 mmHg → Shock/Hypotension protocol</li>
+<li><strong>HYPOGLYCEMIA:</strong><ul>
+<li><span class="ws">W*</span> Adult: D10 IV, titrate to effect, up to 25 g</li>
+<li>Pediatric: D10 5 mL/kg by infusion, not to exceed 250 mL total</li>
+<li>Newborn: D10 2 cc/kg</li></ul></li>
+<li><strong>HYPERGLYCEMIA (&gt;250 mg/dL with symptoms):</strong><ul>
+<li>Adult: Fluid challenge 1 L bolus IV; reassess; contact MC before re-bolus</li>
+<li>Pediatric: 10 cc/kg (or 20 cc/kg if hypotensive)</li></ul></li></ul></div></div>`},
+{id:'altered-mental-status',title:'Altered Mental Status (AMS)',section:'medical',
+tags:'AMS altered mental status confusion LOC unconscious glucose stroke seizure overdose alcohol AEIOU TIPS',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
+<div class="assess">
+<div class="assess-col"><div class="assess-head">History</div>
+<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<li>Hx of Diabetes (self/family)</li><li>Hx cardiac/stroke/seizure</li>
+<li>Hx of Trauma</li><li>Previous/current illicit drug use</li>
+<li>Toxic ingestion; Recent illness; Syncope</li></ul></div>
+<div class="assess-col"><div class="assess-head">Signs / Symptoms</div><ul>
+<li class="b">Abnormal vital signs persist</li>
+<li>Bizarre behavior (hallucinations, delusions)</li>
+<li>Change in baseline mental status</li>
+<li class="b">Decreased mental status</li>
+<li>Hypoglycemia (cool, diaphoretic skin, seizure)</li>
+<li>Hyperglycemia (warm, dry skin, Kussmaul resp)</li>
+<li class="b">Shortness of breath; Syncope</li></ul></div>
+<div class="assess-col"><div class="assess-head">Differential — AEIOU-TIPS</div><ul>
+<li>A — Alcohol / Acidosis</li>
+<li>E — Endocrine / Epilepsy / Electrolytes / Encephalopathy</li>
+<li>I — Insulin; O — Opiates / Overdose / Oxygen</li>
+<li>U — Uremia; T — Trauma</li>
+<li>I — Infection; P — Poisoning / Psychosis</li>
+<li>S — Stroke / Seizure / Syncope</li></ul></div></div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Initiate Universal Patient Care protocol</li>
+<li><span class="ws">W*</span> Check blood glucose level</li>
+<li>Treat underlying cause if known:<ul>
+<li>Trauma suspected → General Trauma Management</li>
+<li>Cardiac suspected → Chest Pain/ACS/MI/STEMI protocol</li>
+<li>Sepsis suspected → Sepsis protocol</li>
+<li>Stroke suspected → Stroke/TIA/Neurological protocol</li>
+<li>Diabetic suspected → Diabetic Emergency protocol</li>
+<li>Overdose suspected → Overdose/Toxicology/Poisoning protocol</li></ul></li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li>Consider ECG / 12-lead if available</li>
+<li><span class="ws">W*</span> Consider End-Tidal CO₂ if available</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Consider Vascular Access</li>
+<li>SBP &lt;90 mmHg → Shock/Hypotension protocol</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">General Considerations</div><ul>
+<li>Safer to assume hypoglycemia than hyperglycemia if in doubt</li>
+<li>Do not let suspected alcohol/drug use confuse clinical picture — intoxication masks hypoglycemia and head trauma</li>
+<li>Low glucose &lt;60; normal 60–120; high &gt;250</li>
+<li>Consider Restraints per Physical Restraint procedure if needed for patient/personnel safety</li>
+<li>Repeat blood glucose for any change in mental status</li></ul></div></div>`},
+
+{id:'behavioral-emergencies',title:'Behavioral / Psychiatric Medical Emergencies',section:'medical',
+tags:'behavioral psychiatric agitation psychosis suicide homicidal combative delirium restraint',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
+<div class="assess">
+<div class="assess-col"><div class="assess-head">History</div>
+<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<li>Diabetes; Medic alert tag</li>
+<li>Injury to self or threats to others</li>
+<li>Psychiatric illness / medications</li>
+<li>History of suicidal / homicidal thoughts</li>
+<li>Situational crisis; Substance abuse/OD</li></ul></div>
+<div class="assess-col"><div class="assess-head">Signs / Symptoms</div><ul>
+<li>Affect change, hallucinations; Anxiety; Agitation</li>
+<li>Combative / violent</li>
+<li class="b">Confusion</li>
+<li>Delusional thoughts, bizarre behavior</li>
+<li>Expression of suicidal / homicidal thoughts</li></ul></div>
+<div class="assess-col"><div class="assess-head">Differential</div><ul>
+<li>Alcohol intoxication; Alzheimer's/Dementia</li>
+<li>Bipolar; Schizophrenia; DKA or Infection</li>
+<li>Electrolyte disturbances; Excited Delirium</li>
+<li>Head injury; Hypertensive emergency</li>
+<li>Medication effect/overdose; Sepsis/Meningitis</li>
+<li>Seizure/Postictal; Toxin/Substance abuse</li>
+<li>Withdrawal syndromes</li></ul></div></div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Determine scene safety — if not safe, leave and stage</li>
+<li>Initiate Universal Patient Care protocol</li>
+<li><span class="ws">W*</span> Check blood glucose level</li>
+<li>Treat underlying cause if known</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li>Consider ECG / 12-lead if available</li>
+<li><span class="ws">W*</span> Consider End-Tidal CO₂ if available</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Consider Vascular Access</li>
+<li>SBP &lt;90 mmHg → Shock/Hypotension protocol</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">General Considerations</div><ul>
+<li>Consider all possible medical/trauma causes for behavior</li>
+<li>Do not overlook possibility of domestic violence or child abuse</li>
+<li>Consider Uncooperative Patients / Unsecured Scenes procedure</li></ul></div></div>`},
+
+{id:'bites-envenomation',title:'Bites / Envenomation',section:'medical',
+tags:'bites envenomation snake spider bee sting anaphylaxis rabies tetanus poison control',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available<br>Contact Poison Control: <strong>1-800-709-0911</strong><br>Rapid Transport with early alert to receiving facility</div>
+<div class="assess">
+<div class="assess-col"><div class="assess-head">History</div>
+<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<li>Type of bite/sting; Time/location</li>
+<li>Known allergy/anaphylaxis</li>
+<li>Immunocompromised; Tetanus and Rabies risk</li>
+<li>Domestic vs. wild; Previous reaction</li></ul></div>
+<div class="assess-col"><div class="assess-head">Signs / Symptoms</div><ul>
+<li>Allergic reaction, hives, itching</li>
+<li>Blood oozing from bite wound</li>
+<li class="b">Hypotension or Shock</li>
+<li>Evidence of infection; Pain, soft-tissue swelling, redness</li>
+<li class="b">Shortness of breath, wheezing</li>
+<li>Snake Bite: Numbness/Paresthesia</li></ul></div>
+<div class="assess-col"><div class="assess-head">Differential</div><ul>
+<li>Animal bite; Human bite</li>
+<li>Infection risk or cellulitis</li>
+<li>Insect sting (bee, wasp, ant, tick)</li>
+<li>Rabies risk</li>
+<li>Snake bite (poisonous); Spider bite (poisonous)</li>
+<li>Tetanus risk</li></ul></div></div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Initiate Universal Patient Care protocol</li>
+<li>Venomous snake bite → keep site at heart level or below; immobilize entire length of involved extremity</li>
+<li>Anaphylaxis → Allergic Reaction/Anaphylaxis protocol; avoid Epi injection in affected extremity if possible</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li><span class="ws">W*</span> Albuterol, Atrovent, or DuoNeb for bronchospasm → Respiratory Distress/Reactive Airway Disease protocol</li>
+<li>Consider ECG / 12-lead if available</li></ul></div>
+<div class="lv sga-lv"><div class="lv-tag sga-tag">EMT w/ SGA Endorsement</div><ul>
+<li>If airway not manageable by BLS methods, consider SGA</li>
+<li><span class="ws">W*</span> Consider End-Tidal CO₂ if available</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Consider Vascular Access</li>
+<li>SBP &lt;90 mmHg → Shock/Hypotension protocol</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">General Considerations</div><ul>
+<li>Consider rapid transport to hospital that can provide antivenom; contact MC for additional guidance</li>
+<li>Provide early alert to receiving facility</li></ul></div></div>`},
+
+{id:'cardiac-arrest-pediatric',title:'Cardiac Arrest – Pediatric',section:'medical',
+tags:'pediatric cardiac arrest CPR AED child infant pulseless resuscitation epi epinephrine',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
+<div class="assess">
+<div class="assess-col"><div class="assess-head">History</div>
+<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<li>Events leading to arrest; Medical history</li>
+<li>Possibility of foreign body</li>
+<li>Respiratory distress or arrest</li>
+<li>Possible toxic or poison exposure; Congenital disease</li>
+<li>Estimated downtime / bystander CPR</li>
+<li>Medication (maternal or child); Hypothermia</li>
+<li>Non-accidental trauma; SIDS; POLST, DNI/R</li></ul></div>
+<div class="assess-col"><div class="assess-head">Signs / Symptoms</div><ul>
+<li class="b">Apnea / Agonal Respirations</li>
+<li class="b">Pulseless</li>
+<li class="b">Unresponsive</li>
+<li>Absent heart sounds on auscultation</li></ul></div>
+<div class="assess-col"><div class="assess-head">Differential — Hs &amp; Ts</div><ul>
+<li>Hypovolemia; Hypoxia; H⁺ (Acidosis)</li>
+<li>Hyper/Hypokalemia; Hyper/Hypoglycemia</li>
+<li>Hypothermia; Toxins; Tamponade</li>
+<li>Tension Pneumothorax</li>
+<li>Thrombosis (coronary or pulmonary)</li>
+<li>Trauma (hypovolemia, increased ICP)</li>
+<li>Foreign body obstruction; Respiratory effort</li></ul></div></div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR / EMT</div><ul>
+<li>Initiate Universal Patient Care protocol</li>
+<li>Establish unresponsiveness; identify absence of pulse and respirations</li>
+<li>High-quality CPR with minimal interruption<ul>
+<li>2 min cycles, &lt;10 sec pause; rotate compressor q2 min</li></ul></li>
+<li>Apply AED/EKG leads/defib pads; analyze and follow AED/monitor instructions</li></ul></div>
+<div class="lv sga-lv"><div class="lv-tag sga-tag">EMT w/ SGA Endorsement</div><ul>
+<li>SGA with 100% O₂</li>
+<li><span class="ws">W*</span> Consider End-Tidal CO₂ if available</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement</div><ul>
+<li>Consider Vascular Access</li>
+<li>If arrest from hypovolemic shock: volume resuscitation 20 mL/kg LR/NS</li></ul></div>
+<div class="lv aemt-lv"><div class="lv-tag aemt-tag">AEMT</div><ul>
+<li><span class="ws">W*</span> Asystole/PEA (no shock) OR V-Fib/Pulseless V-Tach (shock):<br>Epi 1:10,000 — 0.01 mg/kg IV/IO</li></ul></div>
+<div class="lv peds-lv"><div class="lv-tag peds-tag">Pediatric Considerations</div><ul>
+<li>Use weight-based system (length-based tape)</li>
+<li>Use pediatric defib pads when available; adult pads if pediatric unavailable</li>
+<li>Not responding → consider Withholding/Terminating Resuscitation</li>
+<li>Spontaneous resuscitation → Cardiac Arrest – Pediatric ROSC protocol</li></ul></div></div>`},
+
+{id:'cardiac-arrest-pediatric-rosc',title:'Cardiac Arrest – Pediatric ROSC',section:'medical',
+tags:'pediatric ROSC return spontaneous circulation post arrest child infant resuscitation',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
+<div class="assess">
+<div class="assess-col"><div class="assess-head">History</div><ul>
+<li>Past Medical History; Event/complaints</li></ul></div>
+<div class="assess-col"><div class="assess-head">Signs / Symptoms</div><ul>
+<li>Sudden increase in EtCO₂</li>
+<li>Return of pulse; Return of normal respirations</li>
+<li>Patient has spontaneous movement</li></ul></div>
+<div class="assess-col"><div class="assess-head">Differential — Hs &amp; Ts</div><ul>
+<li>Hypovolemia; Hypoxia; H⁺ (Acidosis)</li>
+<li>Hyper/Hypokalemia; Hyper/Hypoglycemia</li>
+<li>Hypothermia; Toxins; Tamponade</li>
+<li>Tension Pneumothorax; Thrombosis; Foreign body obstruction</li></ul></div></div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Initiate Universal Patient Care protocol</li>
+<li>Optimize ventilation and oxygenation</li>
+<li>Titrate O₂ to target SpO₂ 94–99%</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li>Consider ECG / 12-lead if available</li></ul></div>
+<div class="lv sga-lv"><div class="lv-tag sga-tag">EMT w/ SGA Endorsement</div><ul>
+<li>SGA with 100% O₂ to target SpO₂ 94–99%</li>
+<li><span class="ws">W*</span> EtCO₂ (normal 35–40 mmHg); do NOT hyperventilate</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Consider Vascular Access</li>
+<li>If hypotensive → Shock/Hypotension protocol</li>
+<li>Fluid bolus 20 mL/kg IV/IO as needed; may repeat up to 60 mL/kg</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">General Considerations</div><ul>
+<li>Transport all ROSC patients to closest hospital with interventional capability per local criteria</li>
+<li>Observe for sustained stability — 5–10 min adequate for packaging/loading</li>
+<li>Avoid hypothermia</li></ul></div></div>`},
+
+{id:'drowning',title:'Drowning / Submersion',section:'medical',
+tags:'drowning submersion near drowning water CPAP hypothermia barotrauma decompression',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
+<div class="assess">
+<div class="assess-col"><div class="assess-head">History</div>
+<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<li>Aspiration of fluid</li>
+<li>Submersion — regardless of depth</li>
+<li>Possible history of trauma</li>
+<li>Duration of immersion; Temperature of water</li>
+<li>Salt vs. Fresh water</li></ul></div>
+<div class="assess-col"><div class="assess-head">Signs / Symptoms</div><ul>
+<li class="b">Changes in mental status</li>
+<li>Coughing; Vomiting</li>
+<li class="b">Wheezing, rales, rhonchi</li>
+<li class="b">Respiratory compromise</li>
+<li class="b">Stridor; Unresponsive</li></ul></div>
+<div class="assess-col"><div class="assess-head">Differential</div><ul>
+<li>Air gas embolism; Cardiac arrest</li>
+<li>Nitrogen Narcosis</li>
+<li>Pre-existing medical problem</li>
+<li>Pulmonary barotrauma; Trauma</li></ul></div></div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Initiate Universal Patient Care protocol</li>
+<li>Spinal immobilization while still in water if indicated</li>
+<li>Protect cervical spine if diving accident</li>
+<li>If hypothermic → Hypothermia/Cold Emergencies protocol</li>
+<li>DECOMPRESSION SICKNESS/barotrauma → give O₂; no positive pressure ventilation unless NOT breathing</li>
+<li>Keep patient in supine position</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li>Monitor lung sounds frequently</li>
+<li>Institute CPAP or PEEP for pulmonary edema if available</li>
+<li>Consider ECG / 12-lead if available</li>
+<li><span class="ws">W*</span> Consider End-Tidal CO₂ if available</li></ul></div>
+<div class="lv sga-lv"><div class="lv-tag sga-tag">EMT w/ SGA Endorsement</div><ul>
+<li>If airway not manageable by BLS methods, consider SGA</li>
+<li>Decompression sickness → no positive pressure unless not breathing</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Consider Vascular Access</li>
+<li>SBP &lt;90 mmHg → Shock/Hypotension protocol</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">General Considerations</div><ul>
+<li>Consider self-safety before rescue attempt — drowning is a leading cause of death among rescuers</li>
+<li>ALL near-drowning patients should be transported for hospital evaluation</li>
+<li>Protect against and/or treat hypothermia per protocol</li>
+<li>With pressure injuries (decompression/barotrauma): consider transport for hyperbaric chamber</li>
+<li>Hypothermic/near-drowning patients: resuscitate until care transferred to definitive care; contact MC for ECMO or advanced warming</li></ul></div></div>`},
+
+{id:'hyperthermia',title:'Hyperthermia / Heat Injuries',section:'medical',
+tags:'heat stroke heat exhaustion hyperthermia hot temperature cooling heat cramps heat rash',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
+<div class="assess">
+<div class="assess-col"><div class="assess-head">History</div>
+<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<li>Age; Exposure to increased temperature/humidity</li>
+<li>Time and duration of exposure; Extreme exertion</li>
+<li>Medications (anticholinergics, anti-seizure, etc.)</li>
+<li>Toxic ingestion/substance abuse; Poor PO intake</li></ul></div>
+<div class="assess-col"><div class="assess-head">Signs / Symptoms</div><ul>
+<li><strong>Mild:</strong> Heat rash, edema, cramps; Heat exhaustion (weakness, HA, dizziness, nausea, vomiting, syncope, abdominal pain)</li>
+<li class="b"><strong>Severe — Heat Stroke:</strong> AMS, seizure, hyperthermia, dry skin OR profuse sweating</li></ul></div>
+<div class="assess-col"><div class="assess-head">Differential</div><ul>
+<li>CVA; Delirium tremens (DTs)</li>
+<li>Dehydration; Head Trauma; Heat Cramps/Exhaustion/Stroke</li>
+<li>Hyperthyroidism (Storm); Hypoglycemia</li>
+<li>Encephalopathy; Fever/Infection/Sepsis</li>
+<li>Meningitis/Sepsis; Poisoning/overdose; Substance abuse</li></ul></div></div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Initiate Universal Patient Care protocol</li>
+<li>Altered Mental Status protocol as indicated</li>
+<li>Treat nausea/vomiting per Nausea/Vomiting protocol</li>
+<li><strong>Heat Cramps / Heat Exhaustion:</strong><ul>
+<li>Move to cooler environment; remove excess clothing</li>
+<li>Tepid compresses to forehead, neck, extremities</li>
+<li>Oral fluids if possible (water, Gatorade, etc.)</li></ul></li>
+<li><strong>Heat Stroke:</strong><ul>
+<li>Move to cooler environment; remove clothing; aggressive cooling</li>
+<li>Cold/ice packs to axilla/groin; evaporative airflow; buckets of ice with fan</li>
+<li>Ice bath immersion = most rapid cooling (if unavailable: Tarp-assisted cooling with oscillating ice water-soaked towels/sheets)</li></ul></li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li>Consider ECG / 12-lead if available</li>
+<li><span class="ws">W*</span> Consider End-Tidal CO₂ if available</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Consider Vascular Access</li>
+<li>SBP &lt;90 mmHg → Shock/Hypotension protocol</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">General Considerations</div><ul>
+<li>High-risk patients: neonates, infants, geriatric, mentally ill</li>
+<li>Environment &gt;90°F AND humidity &gt;60% = highest risk</li>
+<li>Heat stroke associated with cardiac arrhythmias independent of drug ingestion</li>
+<li>For heat stroke: rapid cooling takes priority over cardiac monitoring, IV access</li>
+<li>Consider exercise-associated hyponatremia (EAH) in endurance athletes with AMS, normal glucose, normal temperature</li></ul></div></div>`},
+
+{id:'hypothermia',title:'Hypothermia / Cold Emergencies',section:'medical',
+tags:'hypothermia cold frostbite VFib rewarming temperature exposure drowning core temperature',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
+<div class="assess">
+<div class="assess-col"><div class="assess-head">History</div>
+<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<li>Exposure temperature / wind chill</li>
+<li>Length of exposure</li>
+<li>Drowning/submersion victim</li>
+<li>Toxic ingestion / substance abuse</li>
+<li>Hx Hypothyroidism</li></ul></div>
+<div class="assess-col"><div class="assess-head">Signs / Symptoms</div><ul>
+<li class="b">AMS or Coma</li>
+<li class="b">Stroke-like symptoms (slurred speech, gait ataxia)</li>
+<li class="b">Arrhythmias</li>
+<li class="b">Bradycardia and/or Hypotension</li>
+<li>Extremity pain, sensory abnormalities</li>
+<li>White / Waxy skin</li></ul></div>
+<div class="assess-col"><div class="assess-head">Differential</div><ul>
+<li>CNS (stroke, head injury, spinal cord injury)</li>
+<li>Sepsis; Hypothyroidism; Hypoglycemia</li></ul></div></div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Initiate Universal Patient Care protocol</li>
+<li>Altered Mental Status protocol as indicated</li>
+<li>Handle patient gently to avoid VF</li>
+<li>Gently remove wet clothes; protect from further exposure; dry as soon as possible</li>
+<li>Warm patient by external means</li>
+<li>Assess ABCs — allow up to 60 sec to confirm respiratory arrest, pulseless arrest, or bradycardia requiring CPR</li>
+<li>Rewarming: warm packs, heated blankets, warmed ambulance; heat packs to groin, axilla</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li>Consider ECG / 12-lead if available</li>
+<li><span class="ws">W*</span> Consider End-Tidal CO₂ if available</li>
+<li>Transport as necessary</li></ul></div>
+<div class="lv sga-lv"><div class="lv-tag sga-tag">EMT w/ SGA Endorsement</div><ul>
+<li>If airway not manageable by BLS methods, consider SGA</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Consider Vascular Access</li>
+<li>SBP &lt;90 mmHg → Shock/Hypotension protocol</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">General Considerations</div><ul>
+<li>Defined as core temperature &lt;95°F (35°C); shivering stops below 90°F (32°C)</li>
+<li>"Cold and dead are NOT dead until warm and dead" — resuscitate hypothermic/near-drowning patients</li>
+<li>Most common cause of death in hypothermia = ventricular fibrillation</li>
+<li>Heart most likely to fibrillate 85–88°F (29–31°C) — defibrillate VF/VT ×1; if no change, defer repeats until rewarmed</li>
+<li>Do NOT attempt to rewarm deep frostbite unless extreme transport delay and no risk of refreezing</li>
+<li>Do NOT allow patients with frozen extremities to ambulate</li>
+<li>Patients with low core temps may not respond to ALS drug interventions</li></ul></div></div>`},
+{id:'vad',title:'Implantable Ventricular Assist Devices (VAD)',section:'medical',
+tags:'VAD LVAD RVAD BiVAD ventricular assist device cardiac pump malfunction',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Manage airway as indicated</li>
+<li>VAD-related/cardiovascular problem → expedite transport to facility where VAD was placed (if condition/time allows)</li>
+<li>Non-cardiovascular problem → transport to facility appropriate for main presenting problem without manipulating device</li>
+<li>Full cardiac arrest: CPR should NOT be performed if evidence pump is still functioning<ul>
+<li>Initiate CPR only if: pump has stopped AND troubleshooting to restart has failed AND patient is unresponsive with no detectable signs of life</li></ul></li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li>Cardiac monitoring; Consider ECG / 12-lead if available</li></ul></div>
+<div class="lv sga-lv"><div class="lv-tag sga-tag">EMT w/ SGA Endorsement</div><ul>
+<li>If airway not manageable by BLS methods, consider SGA</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Consider Vascular Access</li>
+<li>Patient with functioning VAD who is hypoperfused:<ul>
+<li>IV fluids 30 mL/kg isotonic (push-pull method); max 1 L; may repeat ×3 (max 3 L total)</li></ul></li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Key Considerations</div><ul>
+<li>VAD pump flow is NOT pulsatile — patient may have no palpable pulse or accurate pulse oximetry</li>
+<li>Automatic BP cuffs often ineffective; MAP is usually accurate if a reading is obtained</li>
+<li>Do NOT disconnect controller or batteries to defibrillate/cardiovert or acquire 12-lead ECG</li>
+<li>VF, VT, or asystole/PEA may be the patient's "normal" underlying rhythm</li>
+<li>Most common VAD alarm cause: low batteries or battery failure</li>
+<li>Always bring patient's power module, cable, display module, and backup controller to hospital</li>
+<li>VAD complications: Infection, Stroke/TIA, Bleeding, Arrhythmias, Cardiac tamponade</li></ul></div></div>`},
+
+{id:'nausea-vomiting',title:'Nausea / Vomiting',section:'medical',
+tags:'nausea vomiting emesis ondansetron zofran antiemetic isopropyl alcohol',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
+<div class="assess">
+<div class="assess-col"><div class="assess-head">History</div><ul>
+<li>Gastrointestinal; Cardiovascular; Obstetric/gynecologic</li>
+<li>Hypoglycemia; Hyperglycemia; Neurologic</li>
+<li>Oncologic; Psychogenic; Toxidrome</li></ul></div>
+<div class="assess-col"><div class="assess-head">Signs / Symptoms</div><ul>
+<li>Emesis; Abdominal pain</li></ul></div>
+<div class="assess-col"><div class="assess-head">Differential</div><ul>
+<li>Pregnancy; Hypoglycemia; Hyperglycemia</li>
+<li>Bowel obstruction; Myocardial Infarction</li></ul></div></div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Universal Patient Care protocol</li>
+<li><span class="ws">W*</span> Check blood glucose level</li>
+<li>Treat nausea: Isopropyl alcohol — allow patient to inhale vapor from IPA wipe ×3 over 15 min as tolerated</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li><span class="ws">W*</span> Adult: Ondansetron 4–8 mg SL ODT</li>
+<li><span class="ws">W*</span> Pediatric: Ondansetron 2 mg SL ages 1–5 yr; 4 mg ODT age 6+ yr</li></ul></div>
+<div class="lv aemt-lv"><div class="lv-tag aemt-tag">AEMT</div><ul>
+<li>Adult: Ondansetron 4 mg IM/IV</li>
+<li>Pediatric: 2 mg SL ages 1–5 yr; 4 mg ODT age 6+ yr</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Considerations</div><ul>
+<li>Nausea and vomiting are symptoms — thorough history and physical key to identifying emergent underlying disease</li></ul></div></div>`},
+
+{id:'newborn-resuscitation',title:'Newborn Resuscitation / Post Delivery Care',section:'medical',
+tags:'newborn resuscitation delivery birth APGAR neonatal infant CPR oxygen bulb suction',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Initiate Universal Patient Care protocol</li>
+<li>Suction with bulb syringe PRN — mouth then nose</li>
+<li>Prevent heat loss: quickly dry infant; remove wet linens; maintain warm environment; place in mother's arms if condition warrants</li>
+<li>APGAR: assess breathing and heart rate</li>
+<li>Breathing control: stimulate by gently flicking heels, rubbing spine; face mask 6L O₂ or blow-by O₂</li>
+<li>Positive pressure ventilation (PPV) if: apnea or gasping — APGAR ≤5 — HR &lt;100</li>
+<li>At 30–60 sec after delivery, clamp and cut cord ~6 inches from infant (if resuscitation needed, may clamp sooner)</li>
+<li>CPR if HR &lt;60 bpm at ratio 3:1 compression to ventilation</li>
+<li><span class="ws">W*</span> Blood glucose check if &lt;50 mg/dL → Diabetic Emergency protocol</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li>Blood glucose check if &lt;50 mg/dL → Diabetic Emergency protocol</li>
+<li><span class="ws">W*</span> Consider End-Tidal CO₂ if available</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Consider Vascular Access</li>
+<li>Persistent bradycardia (rate &lt;60) despite PPV</li>
+<li>Neonatal fluid resuscitation: 10 mL/kg normal saline</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Additional Considerations</div><ul>
+<li>Continue assisted ventilation as needed; closely monitor respiratory effort, HR, blood glucose, SpO₂</li>
+<li>Keep newborn normothermic — hypothermia significantly increases morbidity</li>
+<li>Allow placenta to deliver naturally — do NOT pull on umbilical cord; transport all passed tissue to hospital</li>
+<li>Massage fundus to help control postpartum bleeding</li></ul></div>
+<div class="lv transport-lv"><div class="lv-tag transport-tag">APGAR Scale</div>
+<table class="dose-table"><thead><tr><th>Sign</th><th>0</th><th>1</th><th>2</th></tr></thead><tbody>
+<tr><td>Activity</td><td>Absent</td><td>Arms/Legs Flexed</td><td>Active movement</td></tr>
+<tr><td>Pulse</td><td>Absent</td><td>&lt;100</td><td>&gt;100</td></tr>
+<tr><td>Grimace</td><td>No response</td><td>Grimace/flexion</td><td>Sneeze, cough, pulls away</td></tr>
+<tr><td>Appearance</td><td>Blue/Pale</td><td>Normal except extremities</td><td>Normal overall</td></tr>
+<tr><td>Respiration</td><td>Absent</td><td>Slow, irregular</td><td>Good, strong cry</td></tr>
+</tbody></table>
+<p style="font-size:12px;padding:4px 0">0–3 Severely depressed; 4–6 Moderately depressed; 7–10 Excellent</p></div></div>`},
+
+{id:'ob-emergencies',title:'OB / GYN Emergencies / Childbirth / Postpartum',section:'medical',
+tags:'obstetric gynecological childbirth delivery postpartum pregnancy ectopic placenta breech cord prolapse hemorrhage',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
+<div class="assess">
+<div class="assess-col"><div class="assess-head">History</div>
+<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<li>Pregnancy/Date of LMP/Due date; Gravida/Para</li>
+<li>Hx pregnancy complications; Prenatal care</li>
+<li>Smoking, alcohol, substance abuse</li>
+<li>Onset/type of bleeding; Trauma; Medications (anticoagulants)</li></ul></div>
+<div class="assess-col"><div class="assess-head">Signs / Symptoms</div><ul>
+<li>Spasmodic abdominal pain; Urge to defecate</li>
+<li>Vaginal discharge or bleeding; Vaginal crowning</li>
+<li>Tachycardia; Hypotension</li>
+<li class="b">AMS; Abdominal pain</li>
+<li>Visible vaginal bleeding; Signs of trauma/abuse</li></ul></div>
+<div class="assess-col"><div class="assess-head">Differential</div><ul>
+<li>Ectopic pregnancy; Placental abruption</li>
+<li>Placenta previa; Uterine rupture</li>
+<li>Spontaneous abortion; Postpartum hemorrhage</li>
+<li>Abdominal/pelvic trauma</li></ul></div></div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR / EMT</div><ul>
+<li>Initiate Universal Patient Care protocol</li>
+<li>Vaginal bleeding → determine pregnancy status; transport any passed tissue with patient</li>
+<li>Third-trimester females → left lateral decubitus (protect spine if indicated)</li>
+<li>Multiple or precipitous delivery → request additional ambulance</li>
+<li><strong>Normal (headfirst) delivery:</strong><ul>
+<li>Sterile/clean technique; guide but do not retard or hurry delivery</li>
+<li>Check for cord around neck — gently remove if found</li>
+<li>Apply gentle counterpressure to baby's head as it delivers</li>
+<li>Assist delivery of shoulders and rest of body</li>
+<li>After delivery: assess per Newborn Resuscitation protocol</li>
+<li>Briefly dry infant; place on mother's chest skin-to-skin; cover with dry blanket</li>
+<li>APGAR at 1 min and 5 min after birth</li>
+<li>Clamp/cut cord 30–60 sec after delivery (~6 inches from infant)</li>
+<li>Do NOT delay transport to deliver placenta; massage uterus externally after placenta delivers</li>
+<li>Postpartum hemorrhage &gt;500 mL → continue uterine massage; treat for shock</li></ul></li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Consider Vascular Access</li>
+<li>Hypoperfusion → 500 mL NS/LR initial; additional challenges as needed, max 2,000 mL</li></ul></div>
+<div class="lv transport-lv"><div class="lv-tag transport-tag">Abnormal Presentations</div><ul>
+<li><strong>Breech:</strong> Allow mother to push; do NOT pull baby; gently extract; if head not delivering, place gloved hand in vagina forming "V" around baby's mouth/nose</li>
+<li><strong>Prolapsed Cord:</strong> Knee-chest or extreme Trendelenburg; insert gloved hand to lift head/body off cord; observe cord pulsations; rapid transport</li>
+<li><strong>Cord Around Neck:</strong> Two fingers — slip cord forward over shoulder/head; if unsuccessful, clamp cord with two clamps, cut between, carefully unwrap</li>
+<li><strong>Abruptio Placentae:</strong> Placenta separates prematurely; lower abdominal pain, rigid uterus; shock may develop without significant vaginal bleeding</li>
+<li><strong>Placenta Previa:</strong> Placenta covers cervical opening; vaginal bleeding; cesarean section needed</li></ul></div></div>`},
+
+{id:'overdose',title:'Overdose / Toxicology / Poisoning',section:'medical',
+tags:'overdose OD toxicology poisoning narcan naloxone opioid carbon monoxide organophosphate SLUDGE activated charcoal',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available<br>Contact Poison Control: <strong>1-800-709-0911</strong></div>
+<div class="assess">
+<div class="assess-col"><div class="assess-head">History</div>
+<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<li>Ingestion or suspected ingestion of potentially toxic substance</li>
+<li>Substance ingested, route, quantity; Time of ingestion</li>
+<li>Reason (suicidal, accidental, criminal)</li>
+<li>Available medications in home; Home remedies given prior</li></ul></div>
+<div class="assess-col"><div class="assess-head">Signs / Symptoms</div><ul>
+<li class="b">SLUDGE and DUMBBELS</li>
+<li class="b">Mental status changes</li>
+<li class="b">Hypotension / Hypertension</li>
+<li>Decreased respiratory rate</li>
+<li class="b">Tachycardia, dysrhythmias; Seizures</li></ul></div>
+<div class="assess-col"><div class="assess-head">Differential</div><ul>
+<li>TCAs; Acetaminophen; Depressants; Stimulants</li>
+<li>Anticholinergic; Cardiac medications</li>
+<li>Solvents, alcohols, cleaning agents</li>
+<li>Insecticides (organophosphates)</li></ul></div></div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Initiate Universal Patient Care protocol</li>
+<li>Identify substance and amount ingested/exposed if possible</li>
+<li>Collect empty bottles/containers; transport with patient</li>
+<li><span class="ws">W*</span> Check blood glucose level</li>
+<li><strong>SUSPECTED OPIOID OVERDOSE w/ Respiratory Depression:</strong><ul>
+<li>Adult: Naloxone 0.4–4 mg IN; repeat q2–3 min up to 10 mg or until airway maintained and adequate breathing</li>
+<li>Pediatric: Naloxone 0.1 mg/kg IN (max 2 mg/dose); repeat q2–3 min up to 10 mg; do NOT give to newborns</li></ul></li>
+<li><strong>Carbon Monoxide:</strong> 100% O₂ NRB or CPAP; determine CO level with commercial device if available; SpCO 3–25% with neuro symptoms → treat and transport; SpCO &gt;25% → contact MC for diversion to hyperbaric chamber</li>
+<li><strong>Organophosphates (SLUDGE):</strong> Prepare for copious secretions; Atropine nerve agent auto-injector; Pralidoxime Chloride (2-PAM) adult 1 auto-injector (600 mg) IM into thigh</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li>Consider ECG / 12-lead if available</li>
+<li><span class="ws">W*</span> Consider End-Tidal CO₂ if available</li>
+<li><span class="ws">W*</span> If ingestion within ONE HOUR of EMS arrival: Activated Charcoal adult 50 g PO — <strong>contact Poison Control prior: 1-800-709-0911</strong></li>
+<li>Pediatric charcoal: 1 gm/kg PO (min 10 g, max 50 g)</li>
+<li><strong>OPIOID (EMT):</strong> Adult Naloxone 0.4–4 mg IM <span class="ws">W*</span> q2–3 min up to 10 mg; Pediatric 0.1 mg/kg IM (max 2 mg/dose) up to 10 mg</li></ul></div>
+<div class="lv sga-lv"><div class="lv-tag sga-tag">EMT w/ SGA Endorsement</div><ul>
+<li>If airway not manageable by BLS methods, consider SGA</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement</div><ul>
+<li>Consider Vascular Access</li>
+<li>SBP &lt;90 mmHg → Shock/Hypotension protocol</li>
+<li>Phenothiazine dystonic reaction/akathisia: Diphenhydramine 12.5–50 mg IV/IM (pediatric: 1 mg/kg max 25 mg)</li></ul></div>
+<div class="lv aemt-lv"><div class="lv-tag aemt-tag">AEMT — Opioid Overdose</div><ul>
+<li>Adult: Naloxone 0.4–2 mg IV/IO q2–3 min, max 10 mg</li>
+<li>Pediatric: 0.1 mg/kg IV q2–3 min, max 2 mg/dose, max total 10 mg</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">General Considerations</div><ul>
+<li>Scene safety paramount — if substance poses hazard/contamination risk, do NOT transport material with patient</li>
+<li>If narcotic overdose/hypoglycemia suspected, administer Narcan/Glucose prior to SGA</li>
+<li>Consider neglect/abuse</li>
+<li>Narcan NOT recommended for initial resuscitation of the newborn</li></ul></div></div>`},
+
+{id:'pain-management',title:'Pain Management',section:'medical',
+tags:'pain acetaminophen tylenol ibuprofen nitrous oxide analgesic pain scale FLACC',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Inclusion / Exclusion</div><ul>
+<li><strong>Inclusion:</strong> Patients experiencing pain</li>
+<li><strong>Exclusion:</strong> Pregnancy with active labor</li></ul></div>
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Initiate Universal Patient Care protocol</li>
+<li>O₂ to maintain SpO₂ 94–99% or as indicated</li>
+<li>Ice/cold pack and positioning as appropriate</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li><span class="ws">W*</span> Acetaminophen 15 mg/kg PO, max adult dose 1 gram</li>
+<li><span class="ws">W*</span> Ibuprofen 10 mg/kg PO for patients &gt;6 months of age (max dose 800 mg)</li>
+<li><span class="ws">W*</span> Nitrous Oxide if available</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Consider Vascular Access</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Pain Assessment Tools</div><ul>
+<li><strong>Adult / Verbal:</strong> Numeric scale 0–10 (0 = no pain; 10 = worst possible)</li>
+<li><strong>Pediatric 0–2 yr:</strong> FLACC scale (Face, Legs, Activity, Cry, Consolability) — 0–2 each, total 0–10</li>
+<li><strong>Pediatric 3–7 yr:</strong> Oucher scale (faces/photos)</li>
+<li><strong>Pediatric 3+ yr / Cognitively intact:</strong> Wong-Baker FACES scale</li></ul></div></div>`},
+
+{id:'pediatric-brue',title:'Pediatric BRUE — Brief Resolved Unexplained Event',section:'medical',
+tags:'BRUE ALTE infant pediatric apnea color change tone resolved unexplained event SIDS',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Inclusion Criteria</div><ul>
+<li>Infant &lt;1 year old; event reported by bystander as sudden, brief (&lt;1 min), completely resolved upon EMS arrival</li>
+<li>Includes ≥1 of: absent/decreased/irregular breathing; color change (central cyanosis or pallor); marked change in muscle tone; altered level of responsiveness</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">Exclusion Criteria — transport and evaluate if any present</div><ul>
+<li>Abnormal vital signs for age (including fever); vomiting; signs of trauma; noisy or labored breathing</li>
+<li>Identifiable cause: gastric reflux, swallowing dysfunction, nasal congestion, periodic breathing, breath-holding spell, choking/gagging, seizure activity, hypoglycemia</li>
+<li>Significant past medical history (congenital heart disease, pulmonary disease, VP shunt, seizure disorder)</li>
+<li>History or exam concerning for child abuse/neglect</li></ul></div>
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR / EMT / AEMT — Patient Management</div><ul>
+<li>Initiate Universal Patient Care protocol</li>
+<li>Support ABCs; follow Respiratory Distress protocol as needed</li>
+<li>Obtain and document: complications of pregnancy, birth date/gestational age, fever or recent infection, prior BRUE episodes, underlying conditions, resuscitation attempts before EMS arrival</li>
+<li>Consider ECG / 12-lead if available (EMT and above)</li>
+<li><span class="ws">W*</span> Assess blood glucose (EMR)</li>
+<li>Transport via ALS to ED even if infant currently appears in no distress, if available</li>
+<li>OLMC contact mandatory if parent/guardian wishes to refuse transport</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Considerations</div><ul>
+<li>BRUE = group of symptoms, NOT a specific disease; most common &lt;1 yr, may occur up to 2 yr</li>
+<li>Many infants appear normal by the time EMS arrives</li>
+<li>Consider non-accidental trauma</li>
+<li>Serious causes: pneumonia, bronchiolitis, seizure, sepsis, intracranial hemorrhage, meningitis</li>
+<li>More frequent in premature infants and those with cystic fibrosis, bronchiolitis, or congenital heart disease</li></ul></div></div>`},
+
+{id:'respiratory-distress',title:'Respiratory Distress / Reactive Airway Disease',section:'medical',
+tags:'respiratory distress asthma COPD albuterol bronchospasm wheezing shortness breath dyspnea CPAP stridor airway',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
+<div class="assess">
+<div class="assess-col"><div class="assess-head">History</div>
+<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<li>Asthma; COPD (emphysema, bronchitis)</li>
+<li>Congestive heart failure</li>
+<li>Home treatment (O₂, nebulizer)</li>
+<li>Medications (theophylline, steroids, inhalers)</li>
+<li class="b">No improvement with initial treatment</li>
+<li>Toxic exposure; Smoking</li></ul></div>
+<div class="assess-col"><div class="assess-head">Signs / Symptoms</div><ul>
+<li class="b">Decreased ability to speak</li>
+<li>Fever, cough</li>
+<li class="b">Increased respiratory rate and effort</li>
+<li class="b">Pursed-lip breathing</li>
+<li class="b">Shortness of breath; Suspected PE</li>
+<li>Tachycardia; Wheezing, rhonchi, rales</li>
+<li class="b">Use of accessory muscles</li></ul></div>
+<div class="assess-col"><div class="assess-head">Differential</div><ul>
+<li>Anaphylaxis; Aspiration; Asthma</li>
+<li>Cardiac (MI or CHF); COPD</li>
+<li>Hyperventilation; Inhaled toxin (CO)</li>
+<li>Pericardial tamponade; Pleural effusion</li>
+<li>Pneumonia; Pneumothorax; Pulmonary Embolus</li></ul></div></div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Universal Patient Care protocol; treat per clinical impression</li>
+<li><strong>Upper Airway Obstruction:</strong> Sit up; AHA protocol for complete obstruction; transport if not cleared or suspicious of aspiration</li>
+<li><strong>Insufficient Respiration or Arrest:</strong> Rule out obstruction; ventilate with BVM; Narcan 2.0 mg IN if cause unknown or narcotics possible</li>
+<li><strong>Wheezing:</strong> Assist MDI</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT / AEMT</div><ul>
+<li><strong>Wheezing (Asthma/COPD):</strong><ul>
+<li>Adult: Albuterol 2.5 mg + Atrovent 0.5 mg via neb; may repeat Albuterol PRN</li>
+<li>Pediatric: Albuterol 2.5 mg + Atrovent 0.25 mg in 3.0 mL NS SVN; may repeat ×1; continuous Albuterol 2.5 mg in 3 mL if &lt;5 yr old; use blow-by if &lt;5 yr</li></ul></li>
+<li>Consider CPAP</li>
+<li>Cyanotic or suspected MI or severe distress: high-flow O₂ by mask; be prepared to assist respiration</li>
+<li><strong>Pulmonary Edema:</strong> Sit patient up, dangle legs; CPAP 100% FiO₂ if in extremis; PEEP valve if assisting ventilation; if suspected MI → Chest Pain/ACS protocol; NTG <span class="ws">W*</span> AEMT</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Considerations</div><ul>
+<li>Aggressive airway management (SGA <span class="wdbl">W**</span>) for unconscious/unresponsive patient; call ALS when available</li>
+<li>Tachypnea: consider all causes (PE, hypoxia, cardiac, infection, trauma) — hyperventilation is a response to underlying problem; do NOT treat by rebreathing CO₂</li>
+<li>EtCO₂ normal range: 35–45 mmHg; may be higher in COPD patients</li></ul></div></div>`},
+
+{id:'sepsis',title:'Sepsis (Adult)',section:'medical',
+tags:'sepsis infection septic shock fever tachycardia hypotension altered mental status EtCO2 sepsis alert',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
+<div class="assess">
+<div class="assess-col"><div class="assess-head">History</div>
+<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<li>Fever, known infection</li>
+<li>Immunosuppression (HIV, chemotherapy)</li>
+<li>Indwelling medical device; Recent surgery/hospital stay</li>
+<li>Recent antibiotics or steroids; Hx adrenal insufficiency</li></ul></div>
+<div class="assess-col"><div class="assess-head">Sepsis Guidelines</div><ul>
+<li class="b">Suspected or known infection AND EtCO₂ &lt;26</li>
+<li class="b">PLUS ≥2 of the following:</li>
+<li>Temperature &lt;96.0°F OR &gt;100.4°F</li>
+<li>HR &gt;90 AND RR &gt;22</li>
+<li>SBP &lt;90 mmHg</li>
+<li class="b">Altered Mental Status (GCS &lt;15)</li></ul></div>
+<div class="assess-col"><div class="assess-head">Differential</div><ul>
+<li>Stroke; Pulmonary embolism; Anaphylaxis</li>
+<li>Hyperthermia/Heat illness; Hypothermia/Cold illness</li>
+<li>Substance abuse/Toxic exposure</li>
+<li>Hypo-/Hyperthyroid; Hypoglycemia</li></ul></div></div>
+<div class="proto-note">🏥 Notify receiving hospital of <strong>"Sepsis Alert"</strong></div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Sepsis Criteria (all must apply)</div><ul>
+<li>Suspected or known infection AND EtCO₂ &lt;26</li>
+<li>Meet ≥2: Altered mentation; Temp &lt;96.0°F OR &gt;100.4°F; HR &gt;90 AND RR &gt;22; Hypotension (SBP &lt;90 or MAP &lt;65)</li>
+<li>MAP calculation: (2 × diastolic + systolic) ÷ 3</li></ul></div>
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Initiate Universal Patient Care protocol</li>
+<li>O₂ to maintain SpO₂ above 95%</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li>Consider ECG / 12-lead if available</li>
+<li><span class="ws">W*</span> Consider End-Tidal CO₂ if available</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Consider Vascular Access</li>
+<li>SBP &lt;90 mmHg → Shock/Hypotension protocol</li></ul></div></div>`},
+
+{id:'seizures',title:'Seizures / Febrile Seizure',section:'medical',
+tags:'seizure febrile epilepsy status epilepticus tonic clonic postictal glucose acetaminophen',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
+<div class="assess">
+<div class="assess-col"><div class="assess-head">History</div>
+<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<li>Number and duration of seizures; Head trauma</li>
+<li>Hx seizure or status epilepticus</li>
+<li>Medication compliance/dosage; Anticoagulant therapy</li>
+<li>Substance abuse/toxic ingestion; Fever</li>
+<li>LMP, pregnancy</li></ul></div>
+<div class="assess-col"><div class="assess-head">Signs / Symptoms</div><ul>
+<li class="b">Altered Mental Status (postictal)</li>
+<li class="b">Fever / Rash / Nuchal Rigidity</li>
+<li class="b">Head trauma</li>
+<li>Incontinence; Observed seizure activity</li>
+<li>Tonic / Clonic activity</li>
+<li class="b">Status epilepticus</li></ul></div>
+<div class="assess-col"><div class="assess-head">Differential</div><ul>
+<li>Hypoxia; Medication/Toxin; Muscle spasm</li>
+<li>Hypoglycemia; Syncope; Infection; Fever</li>
+<li>Shunt malfunction; Intracranial mass/bleed</li></ul></div></div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Initiate Universal Patient Care protocol</li>
+<li>Protect from injury — do NOT put anything in mouth; lower patient to ground when possible</li>
+<li><span class="ws">W*</span> Check blood glucose; if &lt;60 mg/dL → Altered Mental Status protocol</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li>Temperature &gt;101.0°F:<ul>
+<li><span class="ws">W*</span> Acetaminophen 15 mg/kg PO if child can maintain airway and swallow; or per rectal suppository if unable</li>
+<li>If child &gt;6 months and max acetaminophen dose &lt;4 hr ago and temp still &gt;101°F: Ibuprofen 10 mg/kg PO if able to swallow</li></ul></li>
+<li><span class="ws">W*</span> Consider End-Tidal CO₂ if available</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Consider Vascular Access</li>
+<li>Adult SBP &lt;90 mmHg → Shock/Hypotension protocol</li>
+<li>Pediatric below min acceptable BP → Shock/Hypotension protocol</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Considerations</div><ul>
+<li>Place pregnant patients on left side for transport</li>
+<li>All first-time seizure patients require physician evaluation</li>
+<li>If patient NOT actively seizing on arrival (postictal), IV not required</li>
+<li>Seizures that self-terminate in known epileptic may not require treatment or transport</li>
+<li>Seizures may be a sign of cerebral hypoxia from cardiac arrest</li>
+<li>If evidence/suspicion of trauma, immobilize spine</li>
+<li>Consider nasopharyngeal airway; elevate head of bed to 30°</li></ul></div></div>`},
+
+{id:'sickle-cell',title:'Sickle Cell Pain Crisis',section:'medical',
+tags:'sickle cell pain crisis anemia hemoglobin analgesic opioid vascular access',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Initiate Universal Patient Care protocol</li>
+<li>Evaluate and manage altered mental status</li>
+<li>Consider ALS for evaluation and management of pain</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li>Treat pain per Pain Management protocol</li>
+<li>Treat nausea/vomiting per Nausea/Vomiting protocol</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Start IV; provide saline 10 mL/kg NS bolus (up to 1 L)</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Considerations</div><ul>
+<li>Comfort measures: keep patient warm and dry; position of comfort unless clinical condition requires otherwise</li>
+<li>Assess for life-threatening complications: Acute Chest Syndrome, Stroke, Meningitis, Septic arthritis, Splenic sequestration crisis, Traumatic pain</li>
+<li>Patients may have higher tolerance to narcotic pain medications</li>
+<li>These patients tolerate acute blood loss poorly due to baseline anemia</li>
+<li>Fever should be considered an emergency — transport for bacteremia risk</li>
+<li>Sickle cell TRAIT patients can have pain crises in extreme conditions (heat exhaustion, dehydration) — several athlete deaths linked to sickle cell trait</li></ul></div></div>`},
+
+{id:'shock-hypotension',title:'Shock (Non-Traumatic) / Hypotension',section:'medical',
+tags:'shock hypotension hypoperfusion fluid resuscitation IV saline tachycardia low blood pressure',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
+<div class="assess">
+<div class="assess-col"><div class="assess-head">History</div>
+<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<li>Allergic reaction; Bleeding (GI or vaginal)</li>
+<li>Cardiac ischemia (MI, CHF)</li>
+<li>Hx of Adrenal Insufficiency; Medications</li>
+<li>Recent illness (Sepsis)</li></ul></div>
+<div class="assess-col"><div class="assess-head">Signs / Symptoms</div><ul>
+<li class="b">Altered mental status, confusion, agitation</li>
+<li class="b">Black or tarry stools</li>
+<li class="b">Emesis (bright red or coffee-ground)</li>
+<li class="b">Hypotension; Pale, cool, clammy skin, diaphoresis</li>
+<li class="b">Rales and pulmonary edema; Respiratory distress</li>
+<li class="b">Syncope; Tachycardia, delayed capillary refill</li>
+<li class="b">Weak, rapid pulse; Weakness, dizziness</li></ul></div>
+<div class="assess-col"><div class="assess-head">Differential</div><ul>
+<li>Allergic reaction; Anaphylaxis; Cardiac-related illness</li>
+<li>Dehydration; Dysrhythmias; Ectopic pregnancy</li>
+<li>Infection/Sepsis; Neurogenic; Trauma</li>
+<li>Toxic ingestion; Vasovagal; Vomiting/Diarrhea</li></ul></div></div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR / EMT</div><ul>
+<li>Initiate Universal Patient Care protocol</li>
+<li>Control external bleeding</li></ul></div>
+<div class="lv sga-lv"><div class="lv-tag sga-tag">EMT w/ SGA Endorsement</div><ul>
+<li>If airway not manageable by BLS, consider SGA if patient unresponsive</li>
+<li><span class="ws">W*</span> Consider End-Tidal CO₂ if available</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Consider Vascular Access — preferably two access points</li>
+<li>If lung fields clear: initial fluid challenge 500 mL NS; additional challenges as needed to maintain cerebral perfusion, max 2,000 mL</li>
+<li>Pediatric fluid bolus: 20 mL/kg NS; may repeat to max 60 mL/kg</li>
+<li><strong>Head Injury:</strong> target BP 100–110 mmHg systolic (MAP &gt;65); target EtCO₂ 35–40 mmHg</li>
+<li><strong>Sepsis:</strong> establish 2 large bore IVs (consider IO)</li>
+<li><strong>Adult NS/LR:</strong><ul>
+<li>Normotensive: 10 mL/kg IV/IO in 250–500 mL increments (max 2 L); reassess after each bolus</li>
+<li>Hypotensive: 20 mL/kg IV/IO in 250–500 mL increments (max 2 L; pressure infusion until MAP &gt;65, JVD, or rales)</li></ul></li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">General Considerations</div><ul>
+<li>Tachycardia may be early sign of shock — pulse pressure often narrows before systolic BP falls</li>
+<li>Changing level of consciousness = important clue</li>
+<li>Transport in supine position as soon as possible</li>
+<li>Keep patient warm (heat packs, reflective blankets PRN)</li></ul></div></div>`},
+
+{id:'stroke',title:'Stroke / Suspected Stroke / TIA / Neurological',section:'medical',
+tags:'stroke TIA CVA neurological FAST BEFAST LAMS aphasia weakness facial droop paralysis fibrinolytic',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
+<div class="assess">
+<div class="assess-col"><div class="assess-head">History</div>
+<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<li>Previous CVA, TIA's</li>
+<li>Previous cardiac/vascular surgery</li>
+<li>Diabetes; Hypertension, CAD; Atrial fibrillation</li>
+<li>Medications (blood thinners); History of trauma</li></ul></div>
+<div class="assess-col"><div class="assess-head">Signs / Symptoms</div><ul>
+<li class="b">Abnormal vital signs</li>
+<li class="b">Altered mental status</li>
+<li class="b">Aphasia / Dysarthria</li>
+<li class="b">Blindness or other sensory loss</li>
+<li class="b">Headache; Seizures; Syncope</li>
+<li class="b">Respiratory pattern change</li>
+<li class="b">Vertigo/Dizziness; Vomiting</li>
+<li class="b">Weakness / Paralysis</li></ul></div>
+<div class="assess-col"><div class="assess-head">Differential</div><ul>
+<li>Atypical migraine; Bell's palsy</li>
+<li>H⁺ (acidosis); Hypoglycemia</li>
+<li>Hypo-/Hyperkalemia; Hypovolemia; Hypoxia</li>
+<li>Hypothermia; Seizure — Todd's paralysis</li>
+<li>Toxins; Tamponade; Tension pneumothorax; Thrombosis</li></ul></div></div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Initiate Universal Patient Care protocol</li>
+<li>Perform FAST, BEFAST, or LAMS exam</li>
+<li>Determine LAST KNOWN WELL TIME — critical</li>
+<li>Position with head and chest elevated or position of comfort</li>
+<li>Check temperature and pulse oximetry</li>
+<li>O₂ to maintain SpO₂ 94–95%</li>
+<li><span class="ws">W*</span> Capillary glucose; treat hypoglycemia per Altered Mental Status protocol</li>
+<li>Give nothing by mouth unless hypoglycemic; suction as necessary</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li>Perform FAST exam, BEFAST, and LAMS Score</li>
+<li>Contact appropriate receiving medical facility</li>
+<li>Transport to closest appropriate medical facility</li>
+<li>Notify receiving facility of STOKE Activation as soon as possible</li></ul></div>
+<div class="lv sga-lv"><div class="lv-tag sga-tag">EMT w/ SGA Endorsement</div><ul>
+<li>If airway not manageable by BLS, consider SGA</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Consider Vascular Access</li>
+<li>SBP &lt;90 mmHg → Shock/Hypotension protocol</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Key Considerations</div><ul>
+<li>Scene time should be &lt;10 minutes; document contact info for someone who can provide illness history</li>
+<li>Position patient with head of bed elevated approximately 30°</li>
+<li>Transport per Prehospital Stroke Triage Destination Procedure</li></ul></div>
+<div class="lv transport-lv"><div class="lv-tag transport-tag">Stroke Assessment Tools</div><ul>
+<li><strong>FAST:</strong> Face drooping, Arm weakness, Speech difficulty, Time to call 911</li>
+<li><strong>BEFAST:</strong> Balance, Eyes (vision change), Face, Arm, Speech, Time</li>
+<li><strong>LAMS (Los Angeles Motor Scale):</strong> Facial droop (0–1), Arm weakness (0–2), Grip strength (0–2) — Score ≥4 suggests large vessel occlusion</li></ul></div></div>`},
+
+{id:'syncope',title:'Syncope / Dizziness / Weakness',section:'medical',
+tags:'syncope fainting dizziness weakness LOC loss consciousness vasovagal orthostatic palpitations',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
+<div class="assess">
+<div class="assess-col"><div class="assess-head">History</div>
+<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<li>Activity prior to episode (exertion, urinating/defecating)</li>
+<li>Blood loss (GI, spontaneous abortion) / LMP</li>
+<li>Chest pain/SOB; Diabetes; Trauma</li>
+<li>True LOC; Nausea, vomiting, diarrhea</li>
+<li>New medications / recent dose change</li>
+<li>Witnessed seizure / seizure aura prior to event</li></ul></div>
+<div class="assess-col"><div class="assess-head">Signs / Symptoms</div><ul>
+<li class="b">Bradycardia; Hypotension</li>
+<li class="b">Irregular heart rate</li>
+<li>Lightheaded/dizzy; LOC with near-immediate recovery</li>
+<li class="b">Palpitations; Tachycardia</li></ul></div>
+<div class="assess-col"><div class="assess-head">Differential</div><ul>
+<li>CHF/MI; CVA/Seizure</li>
+<li>Cardiac arrhythmia/Pacemaker dysfunction</li>
+<li>Hypoglycemia; Hypoxia; Medication side effect</li>
+<li>Shock/hypotension/orthostatic; Toxic ingestion</li>
+<li>Vasovagal Episode</li></ul></div></div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Initiate Universal Patient Care protocol</li>
+<li>Patient with identified underlying cause → treat per specific protocol</li>
+<li>Continued neurologic derangement → Stroke/TIA/Neurological protocol</li>
+<li>Ongoing mental status changes or coma → Altered Mental Status protocol</li>
+<li>Oxygen as appropriate</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li>Cardiac monitor / 12-lead EKG if available</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Consider Vascular Access</li>
+<li>SBP &lt;90 mmHg → Shock/Hypotension protocol</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Key Considerations</div><ul>
+<li>Syncope = loss of consciousness and postural tone, resolving spontaneously ("fainting")</li>
+<li>Typically abrupt in onset and resolves quickly — may find patient awake and alert on arrival</li>
+<li>Presyncope = "nearly blacking out" or "nearly fainting"</li>
+<li>All patients suffering syncope deserve hospital evaluation, even if they appear normal with few complaints</li></ul></div></div>`},
+{id:'trauma-general',title:'General Trauma Management',section:'trauma',
+tags:'trauma MARCHH primary survey hemorrhage airway breathing circulation head injury spine immobilization mechanism injury',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Primary Survey — MARCHH Algorithm</div><ul>
+<li><strong>M — Massive Hemorrhage:</strong> Initial visual and body sweep for penetrating wounds and severe life-threatening hemorrhage</li>
+<li><strong>A — Airway:</strong> Assess patency; ask basic questions (stridor, ease of air movement); look for injuries causing obstruction (unstable facial fractures, expanding neck hematoma, blood/vomitus, facial burns)</li>
+<li><strong>R — Respiratory/Breathing:</strong> Rate and pattern; assess for tension pneumothorax; chest wall symmetry; bilateral breath sounds; cover penetrating chest wounds with commercial chest seal (or occlusive dressing taped on 3 sides)</li>
+<li><strong>C — Circulation:</strong> Assess BP and HR</li>
+<li><strong>H — Head Injury:</strong> GCS/AVPU and pupils; gross motor assessment; signs of TBI with herniation (unequal pupils, lateralizing motor signs, posturing)</li>
+<li><strong>H — Hypothermia Prevention:</strong> Prevent further heat loss; maintain normal body temperature</li></ul></div>
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Initiate Universal Patient Care protocol; Initiate MARCHH</li>
+<li>Massive hemorrhage: stop severe external/extremity hemorrhage with tourniquet or hemostatic gauze wound packing; roll patient to examine back</li>
+<li>Impaled objects: leave in place; stabilize by building up around object with multi-trauma dressings</li>
+<li>Immobilize suspected fractures/dislocations; severe deformity with distal cyanosis/pulselessness → gentle in-line traction before splinting</li>
+<li>Penetrating chest wound → occlusive dressing all 4 sides; if breathing worsens, lift one corner to release pressure then re-seal</li>
+<li>Consider Spinal Motion Restriction protocol based on patient condition</li>
+<li>Eye injuries: cover with rigid shield; cover non-injured eye to prevent conjugated movement</li>
+<li>Do not allow patient to eat or drink; treat nausea per Nausea/Vomiting; treat pain per Pain Management</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li>Helmet removal considerations:<ul>
+<li>Helmet only (no shoulder pads): remove helmet</li>
+<li>Sports helmet + shoulder pads: stabilize for transport with both in place; remove facemask before transport; remove helmet/pads if they interfere with airway or immobilization</li></ul></li>
+<li>Transport per Prehospital Trauma Triage Destination Procedure</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Consider Vascular Access (large bore preferred)</li>
+<li><strong>Adult Fluid Resuscitation:</strong><ul>
+<li>SBP &gt;90 and HR &lt;120 → no IV fluids required</li>
+<li>SBP &lt;90 OR HR &gt;120 → 250 mL IV bolus to max 1 L or until SBP 90 mmHg or normal mental status</li>
+<li>Head injury: target SBP &gt;110 mmHg; avoid hypotension</li></ul></li>
+<li><strong>Pediatric Fluid Resuscitation:</strong><ul>
+<li>Tachycardia for age with poor perfusion signs → 20 mL/kg crystalloid bolus; reassess; repeat for persistent signs</li>
+<li>If signs/symptoms persist after 20 mL/kg total, contact online medical direction</li></ul></li></ul></div>
+<div class="lv peds-lv"><div class="lv-tag peds-tag">Pediatric Considerations</div><ul>
+<li>Consider non-accidental trauma (NAT)</li></ul></div></div>`},
+
+{id:'blast-injuries',title:'Blast Injuries',section:'trauma',
+tags:'blast explosion explosive trauma barotrauma burn shrapnel penetrating tympanic membrane',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Injury Pattern</div><ul>
+<li><strong>Primary:</strong> Tympanic membrane (TM) rupture, pulmonary damage, air embolization, hollow viscus injury</li>
+<li><strong>Secondary:</strong> Penetrating trauma, fragmentation, blunt trauma</li>
+<li><strong>Tertiary:</strong> Injuries from displacement by blast wind; blunt/penetrating trauma, traumatic amputations</li>
+<li><strong>Quaternary:</strong> All other injuries: crush, burns, asphyxia, toxic exposures, exacerbation of chronic illness</li></ul></div>
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR / EMT</div><ul>
+<li>Initiate General Trauma Management protocol</li>
+<li>Manage hemorrhage and extremity injuries per Extremity Trauma/External Hemorrhage protocol</li>
+<li>Airway: if thermal or chemical burn to airway suspected, early airway control is vital</li>
+<li>Respiratory: O₂ targeting SpO₂ 94–98%; assist respirations; cover open chest wounds with occlusive dressing; AVOID CPAP</li>
+<li>Head injury: treat per Facial/Dental/Head Trauma or TBI protocol; apply spinal precautions per SMR protocol</li>
+<li>Hypothermia prevention: prevent further heat loss</li>
+<li>Treat pain per Pain Management; nausea per Nausea/Vomiting; do not allow to eat or drink</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Consider Vascular Access (large bore preferred)</li>
+<li>Follow fluid resuscitation per General Trauma Management</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">General Considerations</div><ul>
+<li>Scene safety paramount when responding to explosion</li>
+<li>Multi-system injuries: blunt/penetrating trauma, shrapnel, barotrauma, burns, toxic chemical exposure</li>
+<li>Follow Prehospital Trauma Triage Destination Procedure</li>
+<li>For threatened airway from burns: expedite rendezvous to closest advanced airway manager</li>
+<li>Consider air transport and ALS upgrade for time advantage</li>
+<li>Minimize IV fluid resuscitation in patients without signs of shock</li>
+<li>Consider potential for barotrauma including tension pneumothorax and TM perforation</li>
+<li>Rapid transport to trauma hospital preferable whenever possible</li></ul></div></div>`},
+
+{id:'burns',title:'Burns',section:'trauma',
+tags:'burns thermal chemical electrical TBSA rule of nines airway singed partial full thickness frostbite',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Assessment Findings</div><ul>
+<li>Airway: stridor, hoarse voice; Mouth/nares: redness, blisters, soot, singed hairs</li>
+<li>Breathing: rapid, shallow, wheezes, rales</li>
+<li>Skin: estimate Total Burn Surface Area (TBSA) using Rule of Nines and depth (partial vs. full thickness)</li></ul></div>
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Initiate General Trauma Management protocol</li>
+<li>Stop the burning process with water or saline; remove wet/smoldering clothing and jewelry</li>
+<li>Hazmat: brush off powdery substances before flushing wounds with tepid water; avoid hypothermia</li>
+<li>Leave blisters intact</li>
+<li>Continually monitor airway for obstruction</li>
+<li>Cover burned area with dry sterile dressing — do NOT use ointment, lotion, or antiseptic</li>
+<li>Estimate TBSA using Rule of Nines (superficial/1st degree burns NOT included in TBSA %)</li>
+<li>SBP &lt;90 mmHg → consider other causes; treat per Shock/Hypotension protocol</li>
+<li>Do not allow to eat or drink; nausea per Nausea/Vomiting; pain per Pain Management</li>
+<li><strong>Chemical burn:</strong> Consider Haz-Mat response; protect self; flush with copious water; brush off dry chemicals first</li>
+<li><strong>Electrical burn:</strong> Apply sterile dressings to entry and exit wounds</li>
+<li><strong>Confined space/respiratory:</strong> Remove from hazard; administer high-flow O₂</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li>Consider ECG / 12-lead if available</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Consider Vascular Access (large bore preferred); follow fluid resuscitation</li>
+<li>Large burn or TBSA &gt;20%: Adults and children &gt;14 yr: LR 500 mL/hr; Children 6–13 yr: LR 250 mL/hr; Children ≤5 yr: LR 125 mL/hr</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Transport — Contact MC for destination if any of the following</div><ul>
+<li>Partial thickness burns &gt;10% TBSA; Burns involving face, hands, feet, genitalia, perineum, major joints</li>
+<li>Third degree burns (any age); Electrical burns including lightning; Chemical burns; Inhalation injury</li>
+<li>Burns with preexisting disorders; Burns + concomitant trauma; Burned children to hospitals without pediatric capability</li></ul></div>
+<div class="lv transport-lv"><div class="lv-tag transport-tag">Rule of Nines</div><ul>
+<li><strong>Adult:</strong> Head/neck 9%; Each arm 9%; Chest (front) 18%; Back 18%; Each leg 18%; Genitalia 1%</li>
+<li><strong>Child:</strong> Head/neck 18%; Each arm 9%; Anterior trunk 18%; Posterior trunk 18%; Each leg 14%</li></ul></div></div>`},
+
+{id:'taser-injury',title:'Conducted Electrical Weapon Injury (TASER®)',section:'trauma',
+tags:'TASER conducted electrical weapon dart barbed delirium agitation excited restraint',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Key Considerations</div><ul>
+<li>Device can be discharged: direct contact (no darts); single dart + contact; from distance up to 35 ft with two darts</li>
+<li>19 pulses/sec; 2.1 milliamps per pulse; may precipitate arrhythmias — consider cardiac monitoring and 12-lead ECG</li>
+<li>Patient may have underlying pathology before being tased</li></ul></div>
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Evaluate for delirium with agitated behavior (agitation, reduced pain sensitivity, elevated temperature, persistent struggling, hallucinosis)</li>
+<li>Thoroughly assess for trauma — patient may have fallen from standing or higher</li>
+<li>Ascertain number of TASER® cartridges used to identify total possible darts and contacts</li>
+<li>Ensure patient appropriately secured with law enforcement assistance to protect patient and staff</li>
+<li>Do NOT remove barbed darts from sensitive areas (head, neck, hands, feet, genitals) — see Taser Dart Removal procedure</li>
+<li>Treat medical and traumatic injury</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT / AEMT</div><ul>
+<li>Once patient appropriately secured, perform primary and secondary assessment including EKG, pulse oximetry, consider 12-lead ECG</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">General Considerations</div><ul>
+<li>Before removing barbed dart, ensure cartridge has been removed from weapon</li>
+<li>Patients should NOT be restrained prone, face-down, or hog-tied — respiratory compromise is a significant risk</li>
+<li>Perform comprehensive assessment with attention to signs/symptoms of active medical decompensation</li>
+<li>Transport to hospital</li>
+<li>EMS clinicians should NOT perform "medical clearance" for law enforcement to take patient to non-medical facility</li></ul></div></div>`},
+
+{id:'crush-injury',title:'Crush Injury / Crush Syndrome',section:'trauma',
+tags:'crush injury syndrome compartment syndrome entrapment rhabdomyolysis renal failure tourniquet',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Assessment Findings</div><ul>
+<li>Mental status / GCS; Fractures and compartment syndrome (neurovascular status of injured extremity)</li>
+<li>Examination of spine; Evidence of additional trauma</li></ul></div>
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Initiate General Trauma Management protocol</li>
+<li>Evaluate degree of entrapment and viability of extremities (absent pulse, blanched skin, capillary refill, sensation, extremely cold to touch)</li>
+<li>Manage hemorrhage per Extremity Trauma/External Hemorrhage protocol</li>
+<li>Initiate Spinal Motion Restriction protocol as needed</li>
+<li>SBP &lt;90 mmHg → Shock/Hypotension protocol</li>
+<li>Do not allow to eat or drink; nausea per Nausea/Vomiting</li>
+<li><strong>Wound care:</strong> Remove restrictive dressings/clothing/jewelry; monitor distal pulse, motor, sensation; bandage open wounds (irrigate if needed); stabilize foreign bodies; splint/immobilize injured areas</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li>Consider ECG / 12-lead if available</li>
+<li>Treat pain per Pain Management protocol</li>
+<li>For suspected pelvic crushing injuries, follow Pelvic Wrap procedure if indicated</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Consider Vascular Access (large bore preferred)</li>
+<li>Follow fluid resuscitation per General Trauma Management</li>
+<li>Prior to extrication: begin 1,000–2,000 mL fluid bolus; then maintain 500 mL/hr; contact MC for guidance on total fluid amount</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">General Considerations</div><ul>
+<li>Rapid extrication and transport to definitive care (trauma center preferred)</li>
+<li>Patient may initially present with very few signs and symptoms — maintain high index of suspicion for compressive mechanism of injury</li></ul></div></div>`},
+
+{id:'electrical-lightning',title:'Electrical Injuries / Lightning Strike',section:'trauma',
+tags:'electrical injury lightning strike cardiac arrest burns arrhythmia neurologic trauma reverse triage',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Assessment Findings</div><ul>
+<li>Thermal or non-thermal burns; Evidence of trauma</li>
+<li>Focal neurologic deficits; Cardiac dysrhythmias</li></ul></div>
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Initiate General Trauma Management protocol</li>
+<li>Assure patent airway; if respiratory arrest only, manage airway appropriately</li>
+<li>If cardiopulmonary arrest → start CPR</li>
+<li>Apply Spinal Motion Restriction if associated trauma suspected</li>
+<li>Apply dry dressing to wounds; remove constricting clothing and jewelry (swelling expected)</li>
+<li>SBP &lt;90 mmHg → Shock/Hypotension protocol</li>
+<li>Do not allow to eat or drink; nausea per Nausea/Vomiting; pain per Pain Management</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li>Consider ECG / 12-lead if available</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Establish Vascular Access; follow fluid resuscitation per General Trauma Management</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">General Considerations</div><ul>
+<li>Lightning strike cardiac arrest patients have high rate of successful resuscitation if initiated early — in contrast to general cardiac arrest statistics</li>
+<li><strong>Multiple victims — REVERSE TRIAGE:</strong> Treat cardiac arrest patients FIRST (those who appear dead); those who survive initial strike without cardiac arrest are likely to survive</li>
+<li>Return of spontaneous circulation may precede resolution of respiratory arrest</li>
+<li>Injury mechanisms: direct tissue damage, thermal energy (tissue destruction), mechanical injury (falls, violent muscle contraction)</li>
+<li>May not be immediately apparent that patient is a lightning strike victim</li></ul></div></div>`},
+
+{id:'extremity-trauma',title:'Extremity Trauma / External Hemorrhage Management',section:'trauma',
+tags:'extremity trauma hemorrhage tourniquet wound packing hemostatic gauze fracture dislocation amputation bleeding',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Initiate General Trauma Management protocol</li>
+<li>Crush Injury/Crush Syndrome protocol if indicated</li>
+<li><strong>Manage External Bleeding:</strong><ul>
+<li>Expose wound; apply direct pressure; then pressure dressing</li>
+<li>If direct pressure ineffective or impractical AND site amenable to tourniquet → apply commercial tourniquet:<ul>
+<li>Place 2–3 inches proximal to wound, NOT over a joint; tighten until bleeding stops and distal pulse eliminated</li>
+<li>If bleeding continues → second tourniquet proximal to first</li>
+<li>Thigh wounds: consider two tourniquets side-by-side, tighten sequentially</li></ul></li></ul></li>
+<li><strong>Wound Packing (Groin/axillary "junctional" injury or limb wound with persistent bleeding):</strong><ul>
+<li>Materials: hemostatic gauze, regular gauze, or any available material</li>
+<li>Pack tightly and fully to depth of wound until bleeding stops; apply direct pressure/pressure dressing</li>
+<li>Do NOT remove packing to assess bleeding; pack around (do not remove) bone fragments or foreign objects</li></ul></li>
+<li>Treat pain per Pain Management; do NOT loosen tourniquet to relieve pain</li>
+<li><strong>Fractures/Dislocations:</strong><ul>
+<li>Consider pain management before attempting to move suspected fracture</li>
+<li>Compromised distal vascular function → gently attempt to restore normal anatomic position; reassess perfusion</li>
+<li>Splint to limit movement; elevate above heart level; apply ice/cool packs (not directly to bare skin)</li>
+<li>Reassess distal neurovascular status after any manipulation</li></ul></li>
+<li>Remove wet/blood-soaked clothing; prevent heat loss; do not remove impaled foreign bodies</li>
+<li>Initiate Spinal Motion Restriction as needed; SBP &lt;90 mmHg → Shock/Hypotension</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li>Consider ECG / 12-lead if available</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Establish Vascular Access (large bore preferred)</li>
+<li>Follow fluid resuscitation per General Trauma Management</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">General Considerations</div><ul>
+<li>Tourniquet on bare skin, 2–3 inches proximal to wound; reassess at every stage of patient movement</li>
+<li>Survival markedly improved when tourniquet placed BEFORE shock develops</li>
+<li>Properly-applied tourniquet in conscious patient is painful — treat pain with analgesics but do NOT loosen</li>
+<li><strong>Amputated parts:</strong> Cool but dry; plastic bag on ice in second bag; do NOT let amputated part contact ice directly; transport with patient for possible re-implantation</li>
+<li>Pediatric: most commercial tourniquets effective for children &gt;2 yr; stretch-wrap-tuck elastic type for any age</li></ul></div></div>`},
+
+{id:'facial-head-trauma',title:'Facial / Dental / Head Trauma',section:'trauma',
+tags:'facial head trauma dental eye epistaxis avulsed tooth skull fracture mandible TBI GCS airway',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Assessment Findings</div><ul>
+<li>ABCs with focus on airway patency; Bleeding (epistaxis, oral trauma, facial lacerations)</li>
+<li>Medications (blood thinners/antiplatelet); Mental status for possible TBI; Gross vision; Dental avulsions</li>
+<li>Unstable facial fractures that can abruptly compromise airway; Loose teeth and retropharynx bleeding</li></ul></div>
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR / EMT</div><ul>
+<li>Initiate General Trauma Management; Initiate SMR protocol as needed</li>
+<li>SBP &lt;90 mmHg → Shock/Hypotension; nausea per Nausea/Vomiting; pain per Pain Management; NPO</li>
+<li><strong>Avulsed tooth:</strong> Do NOT touch root; pick up by crown; if dirty, rinse under cold water 10 sec; place in milk or saline; alert patient can hold in mouth using own saliva</li>
+<li><strong>Epistaxis:</strong> Squeeze nose (or patient does) continuously for 10–15 min</li>
+<li><span class="ws">W*</span> Consider Oxymetazoline (Afrin) EMT/AEMT: Adult/Pediatric 2–3 squirts each nostril IN (not recommended &lt;6 yr)</li>
+<li><strong>Eye trauma:</strong> Place eye shield for significant eye trauma; if globe avulsed/enucleated, do NOT put back; cover socket with moist saline dressings then eye shield</li>
+<li><strong>Head wound:</strong> Direct pressure if no suspected open skull injury; moist sterile dressing for potential open skull wound; cover injured eye with moist saline + cup over it</li>
+<li><strong>Mandible unstable:</strong> Patient unable to spit/swallow effectively — suction readily available; preferentially transport sitting up (absent spinal injury)</li>
+<li><strong>Nose/ear avulsion:</strong> Recover tissue if possible; transport in dry sterile gauze in plastic bag on ice; moist sterile dressing for severe lacerations</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Consider Vascular Access (large bore preferred)</li>
+<li>Follow fluid resuscitation per General Trauma Management; Consider EtCO₂</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Key Considerations</div><ul>
+<li>Consider non-accidental trauma/injury in pediatric patients</li>
+<li>Airway may be compromised by fractures or bleeding; lost teeth not recovered on scene may be in the airway</li>
+<li>Avulsed teeth can be re-implanted successfully if done very shortly after injury</li>
+<li>For penetrating eye injuries: do NOT remove foreign bodies; splint in place; cover uninjured eye or ask patient to close it</li>
+<li>Head injury severity: Mild GCS 14–15 (AVPU=A); Moderate GCS 9–13 (AVPU=V); Severe GCS 3–8 (AVPU=P or U)</li>
+<li>EtCO₂ target 40 mmHg (range 35–45); avoid hyperventilation, overventilation, hypocapnia</li></ul></div></div>`},
+
+{id:'pelvis-trauma',title:'Pelvis Trauma',section:'trauma',
+tags:'pelvis fracture pelvic binder hemorrhage trauma unstable hemodynamic instability',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Assessment Findings</div><ul>
+<li>MOI; Blunt force trauma at waist or lower back</li>
+<li>Pain and disability; Difficulty or inability to move legs</li>
+<li>Feeling of lost rigidity/instability with palpation of hip joints</li>
+<li>Abrasions, contusions, bleeding around rectal/vaginal/urethral areas or hematuria</li>
+<li>Limb length discrepancy or deformity; Hematomas above inguinal ligament, scrotum, thigh</li>
+<li>Symphysis gap on gentle palpation; Pelvic ring mobility with gentle compression of ASIS (limit compressions to single attempt)</li></ul></div>
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR / EMT</div><ul>
+<li>Initiate General Trauma Management; SMR protocol as needed</li>
+<li>SBP &lt;90 mmHg → Shock/Hypotension; nausea per Nausea/Vomiting; NPO; pain per Pain Management</li>
+<li><strong>Pelvic Stabilization — consider one of:</strong><ul>
+<li>Commercial Pelvic Binder</li>
+<li>Any other MPD-approved device</li>
+<li>Pelvic Sheet Wrap (if commercial device unavailable): wrap sheet around pelvis and secure ends to maintain compression and stabilization during transport</li></ul></li>
+<li>In males: ensure genitalia are elevated up out of the groin area and not entrapped by device</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Consider Vascular Access (large bore preferred)</li>
+<li>Follow fluid resuscitation per General Trauma Management</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Key Considerations</div><ul>
+<li>Document time pelvic binder applied; BP changes before and after treatment</li>
+<li>Stabilize but do NOT over-reduce injury, especially with lateral compression injuries</li>
+<li>Reduction assessed by evaluating legs, greater trochanters, and patellae in anatomically neutral position</li></ul></div></div>`},
+
+{id:'spinal-motion-restriction',title:'Spinal Motion Restriction (SMR) Guidelines',section:'trauma',
+tags:'spinal SMR spine immobilization cervical collar backboard KED C-spine assessment mechanism',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Indications for SMR</div><ul>
+<li>Altered mental status (including alcohol/drugs)</li>
+<li>Spine pain or tenderness on palpation</li>
+<li>Neurological signs/symptoms (numbness, tingling, weakness, paralysis)</li>
+<li>Anatomic deformity of the spine</li>
+<li>Distracting painful injury preventing reliable assessment</li>
+<li>High mechanism of injury: high-speed MVC, fall from significant height, diving, axial load to head, penetrating injury near spine</li></ul></div>
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR / EMT — SMR Procedure</div><ul>
+<li>If SMR indicated: apply appropriately sized cervical collar; maintain manual stabilization</li>
+<li>Primary SMR method per local protocol (long backboard, KED, scoop, vacuum mattress)</li>
+<li>Secure patient to device; maintain neutral alignment throughout</li>
+<li>If SMR NOT indicated: place patient in position of comfort or position that best maintains airway</li>
+<li>Pediatric: use appropriate-sized pediatric immobilization device; padding may be needed under torso to maintain neutral position</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Key Considerations</div><ul>
+<li>Manual stabilization must be maintained until SMR is complete</li>
+<li>Evidence supports selective spinal immobilization — not all trauma patients require SMR</li>
+<li>Penetrating trauma to head/neck/torso WITHOUT neurological symptoms does NOT require SMR — it may delay care and worsen outcomes</li>
+<li>Helmet removal per General Trauma Management guidance</li>
+<li>Reassess neurovascular status frequently</li>
+<li>Padding under head for pediatric patients in car seats to maintain neutral spine position</li></ul></div></div>`},
+
+{id:'traumatic-brain-injury',title:'Traumatic Brain Injury (TBI)',section:'trauma',
+tags:'TBI traumatic brain injury GCS head trauma herniation ICP Cushing hypotension oxygen hyperventilation',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Assessment — Signs of Herniation</div><ul>
+<li>Unequal/dilated pupils unresponsive to light</li>
+<li>Posturing (decorticate or decerebrate)</li>
+<li>Lateralizing motor signs</li>
+<li>Cushing's Triad: hypertension + bradycardia + irregular respirations (late sign)</li></ul></div>
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR / EMT</div><ul>
+<li>Initiate General Trauma Management; initiate SMR as appropriate</li>
+<li>Airway management priority — protect airway</li>
+<li>O₂ to maintain SpO₂ ≥95%; avoid hypoxia at all costs</li>
+<li>Avoid hypotension: target SBP ≥90 mmHg (adult); target SBP &gt;110 mmHg with head injury</li>
+<li>Avoid hyperventilation: normal ventilation rate (10–12/min adults; 12–20/min pediatric)</li>
+<li><strong>EXCEPTION — Signs of herniation:</strong> controlled hyperventilation at 20/min adult (35/min infant) ONLY if signs of herniation AND hypoventilation not the cause</li>
+<li>Elevate head of bed 30° if no spinal injury/hypotension</li>
+<li>GCS assessment and documentation</li></ul></div>
+<div class="lv sga-lv"><div class="lv-tag sga-tag">EMT w/ SGA Endorsement</div><ul>
+<li>SGA if airway not manageable by BLS; <span class="ws">W*</span> EtCO₂ monitoring</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Consider Vascular Access (large bore preferred)</li>
+<li>Fluid resuscitation per General Trauma Management — head injury target SBP &gt;110 mmHg</li>
+<li>EtCO₂ target: 35–40 mmHg; document for all TBI patients with advanced airway</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Key Considerations</div><ul>
+<li>Hypotension + TBI = dramatically worsened outcome — aggressive BP management</li>
+<li>Hypoxia + TBI = dramatically worsened outcome — aggressive O₂ management</li>
+<li>EtCO₂ monitored and documented for all TBI patients with advanced airway; strict avoidance of hyperventilation, overventilation, and hypocapnia</li>
+<li>Head injury severity: Mild GCS 14–15; Moderate GCS 9–13; Severe GCS 3–8</li>
+<li>Consider non-accidental trauma in pediatric patients</li></ul></div></div>`},
+{id:'12-lead-ecg',title:'12 Lead ECG Acquisition',section:'procedures',
+tags:'12 lead ECG EKG cardiac monitor acquisition transmission STEMI telemetry',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Indications</div><ul>
+<li>Chest pain or suspected ACS/MI/STEMI</li>
+<li>Cardiac arrest or post-ROSC</li>
+<li>Syncope, palpitations, or irregular rhythm</li>
+<li>Altered mental status with suspected cardiac etiology</li>
+<li>Any patient where cardiac monitoring is indicated</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Procedure — EMT (W**)</div><ul>
+<li>Position patient supine; expose chest</li>
+<li>Prepare skin: dry, clip hair if needed, clean with alcohol, abrade lightly if necessary</li>
+<li>Place limb leads: RA (right arm), LA (left arm), RL (right leg), LL (left leg)</li>
+<li>Place precordial leads:<ul>
+<li>V1: 4th ICS, right sternal border</li>
+<li>V2: 4th ICS, left sternal border</li>
+<li>V3: between V2 and V4</li>
+<li>V4: 5th ICS, midclavicular line</li>
+<li>V5: anterior axillary line, same level as V4</li>
+<li>V6: midaxillary line, same level as V4 and V5</li></ul></li>
+<li>Acquire 12-lead; review computerized analysis</li>
+<li>Transmit to receiving facility per local protocol</li>
+<li>Do NOT delay transport to acquire 12-lead; acquire en route if possible</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Key Considerations</div><ul>
+<li>Movement artifact degrades tracing quality — minimize patient movement during acquisition</li>
+<li>Right-sided leads (V3R, V4R) indicated for suspected right ventricular MI (inferior ST elevation)</li>
+<li>Posterior leads (V7, V8, V9) for suspected posterior MI</li>
+<li>Early 12-lead transmission can activate cath lab before hospital arrival, reducing door-to-balloon time</li>
+<li>Do NOT disconnect VAD controller or batteries to acquire 12-lead</li></ul></div></div>`},
+
+{id:'cpap',title:'Continuous Positive Airway Pressure (CPAP)',section:'procedures',
+tags:'CPAP continuous positive airway pressure respiratory distress pulmonary edema CHF asthma COPD PEEP',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Indications</div><ul>
+<li>Respiratory distress with suspected pulmonary edema, CHF, asthma, or COPD</li>
+<li>Near-drowning with pulmonary edema</li>
+<li>SpO₂ &lt;90% not responding to supplemental O₂</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">Contraindications</div><ul>
+<li>Respiratory arrest (use BVM instead)</li>
+<li>Altered mental status with inability to protect airway</li>
+<li>Vomiting or risk of vomiting</li>
+<li>Facial trauma preventing adequate mask seal</li>
+<li>Suspected pneumothorax</li>
+<li>Blast injuries (avoid CPAP)</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Procedure — EMT <span class="ws">W*</span></div><ul>
+<li>Select appropriately sized mask; explain procedure to patient</li>
+<li>Connect O₂ supply (typically requires 15 L/min flow)</li>
+<li>Set initial PEEP at 5 cmH₂O; titrate up to 10–15 cmH₂O as needed</li>
+<li>Apply mask firmly; ensure adequate seal with no major leaks around edges</li>
+<li>Instruct patient to breathe normally through the mask</li>
+<li>Monitor SpO₂, respiratory rate, patient comfort, and mental status</li>
+<li>If patient deteriorates or cannot tolerate → remove and ventilate with BVM</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Key Considerations</div><ul>
+<li>CPAP can dramatically reduce intubation rates and improve outcomes in pulmonary edema</li>
+<li>Patient cooperation is essential — reassure and coach throughout</li>
+<li>Monitor for tension pneumothorax development (decreasing SpO₂, hypotension, unequal breath sounds)</li>
+<li>EtCO₂ monitoring useful if available</li>
+<li>ETCO₂ normal range: 35–45 mmHg; higher normal in COPD patients</li></ul></div></div>`},
+
+{id:'ez-io',title:'EZ-IO — Intraosseous (IO) Access',section:'procedures',
+tags:'IO intraosseous EZ-IO vascular access tibia humerus sternum drill bone marrow',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Indications</div><ul>
+<li>Immediate vascular access needed and IV access cannot be rapidly established</li>
+<li>Cardiac arrest; hemodynamic instability; critical medication administration</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">Contraindications</div><ul>
+<li>Fracture or previous IO in same bone</li>
+<li>IO in same bone within past 24 hours</li>
+<li>Infection or burn over insertion site</li>
+<li>Inability to locate landmarks</li>
+<li>Prosthetic limb or joint at site</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Procedure — EMT <span class="wdbl">W**</span></div><ul>
+<li><strong>Common sites:</strong> Proximal tibia (1–2 cm below tibial tuberosity, medial flat surface); Proximal humerus (greater tubercle); Distal tibia (2 cm proximal to medial malleolus)</li>
+<li>Identify landmarks; cleanse site with antiseptic</li>
+<li>Select appropriate needle set (Pink 15 mm standard adult; Blue 25 mm obese adult/obese pediatric; Yellow 45 mm humeral)</li>
+<li>Remove safety cap; position needle perpendicular to bone with slight angle away from growth plate in pediatric patients</li>
+<li>Drill until sudden decrease in resistance (indicates entry into marrow)</li>
+<li>Remove stylet; confirm placement: aspirate blood/marrow, flush with 10 mL NS, note resistance</li>
+<li>Secure with EZ-Stabilizer; connect to IV tubing</li>
+<li>If conscious patient: 2% lidocaine 20–40 mg IO (flush with NS) for pain before flushing</li>
+<li>Flush with 10 mL NS before each medication; may require pressure infusion for adequate flow</li>
+<li>Document time of insertion; maximum dwell time 24 hours</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Key Considerations</div><ul>
+<li>All IV medications and fluids can be given IO</li>
+<li>IO is the preferred alternative to IV in cardiac arrest</li>
+<li>Complications: extravasation (most common), osteomyelitis (rare), compartment syndrome</li>
+<li>If resistance felt during drilling → do NOT force; select alternate site</li>
+<li>Monitor site frequently for swelling or extravasation</li></ul></div></div>`},
+
+{id:'nasal-atomizer',title:'Nasal Atomizer (MAD — Mucosal Atomization Device)',section:'procedures',
+tags:'nasal atomizer MAD intranasal IN medication naloxone midazolam glucagon atomizer mucosal',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Indications / Medications Delivered IN</div><ul>
+<li>Naloxone (Narcan) — opioid reversal</li>
+<li>Glucagon — hypoglycemia</li>
+<li>Midazolam — seizures (where authorized)</li>
+<li>Any medication approved for intranasal delivery per local protocol</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Procedure — EMT <span class="ws">W*</span></div><ul>
+<li>Draw up medication into syringe per dosing protocol</li>
+<li>Attach MAD (mucosal atomization device) to syringe tip</li>
+<li>Position patient with head slightly extended</li>
+<li>Insert MAD approximately 1 cm into one nostril, angled slightly upward and outward</li>
+<li>Briskly compress plunger — deliver approximately 1 mL per nostril maximum (split dose between nostrils if &gt;1 mL)</li>
+<li>Hold nostril closed briefly to prevent runoff</li>
+<li>If dose exceeds 1 mL per nostril, split between both nostrils or repeat in 3–5 min as indicated</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Key Considerations</div><ul>
+<li>Absorption is rapid — nasal mucosa is highly vascular</li>
+<li>Less effective with nasal congestion, epistaxis, or recent nasal trauma</li>
+<li>Maximum volume per nostril: approximately 1 mL for optimal absorption</li>
+<li>Onset slower than IV but faster than IM for most medications</li>
+<li>Preferred route in uncooperative patients or when IV/IO access unavailable</li></ul></div></div>`},
+
+{id:'physical-restraint',title:'Physical Restraint',section:'procedures',
+tags:'restraint physical soft restraint combative patient behavioral uncooperative Posey wrist',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Indications</div><ul>
+<li>Patient poses immediate danger to self or EMS personnel</li>
+<li>Patient behavior prevents delivery of necessary medical care</li>
+<li>Used in conjunction with law enforcement when appropriate</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Procedure — EMT <span class="ws">W*</span></div><ul>
+<li>Use minimum force necessary; attempt verbal de-escalation first</li>
+<li>Request law enforcement assistance if available</li>
+<li>Use appropriate soft restraints (limb restraints, wrist/ankle restraints, vest)</li>
+<li>Restrain in supine or lateral position — NEVER prone (face-down or hog-tied)</li>
+<li>Secure all four extremities if needed; do not restrain over wounds or IV sites</li>
+<li>Monitor respiratory status, circulation in restrained limbs, and mental status continuously</li>
+<li>Document reason for restraint, type of restraint, time applied, and patient status</li>
+<li>Reassess and document restraint status every 5 minutes</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Key Considerations</div><ul>
+<li>NEVER restrain patient in prone (face-down) or hog-tied position — risk of positional asphyxia is significant</li>
+<li>Excited delirium patients are at highest risk of sudden death during or after restraint</li>
+<li>Monitor airway, breathing, and circulation continuously</li>
+<li>Consider underlying medical/traumatic causes for behavior — do not overlook domestic violence or child abuse</li>
+<li>Mechanical patient restraint devices (Posey wrist, ankle, chest) are EMT scope <span class="ws">W*</span></li>
+<li>Patient restraint requires documentation and ongoing reassessment</li></ul></div></div>`},
+
+{id:'supraglottic-device',title:'Supraglottic Airway Device (SGA) / I-Gel',section:'procedures',
+tags:'SGA supraglottic airway I-gel LMA laryngeal mask airway intubation advanced airway',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Indications</div><ul>
+<li>Unconscious patient with absent or inadequate respirations</li>
+<li>Airway cannot be maintained by BLS methods (head-tilt/chin-lift, OPA, BVM)</li>
+<li>Cardiac arrest requiring definitive airway</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">Contraindications</div><ul>
+<li>Conscious or semiconscious patient with intact gag reflex</li>
+<li>Known esophageal disease or pathology</li>
+<li>Ingestion of caustic substances</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Procedure — EMT <span class="wdbl">W**</span></div><ul>
+<li>Select appropriate size device (follow manufacturer sizing guide by weight/height)</li>
+<li>Pre-oxygenate patient with BVM if possible</li>
+<li>Lubricate device if required per manufacturer</li>
+<li>Position patient: head in neutral or sniffing position</li>
+<li>Open mouth; insert device per manufacturer instructions (typically along hard palate, rotate into position)</li>
+<li>Inflate cuff if applicable (e.g., King LT); I-Gel requires no inflation</li>
+<li>Confirm placement:<ul>
+<li>Bilateral chest rise with ventilation</li>
+<li>Bilateral breath sounds; absent epigastric sounds</li>
+<li>EtCO₂ waveform if available <span class="ws">W*</span></li>
+<li>SpO₂ improving</li></ul></li>
+<li>Secure device; continue ventilation at 10–12/min (adult)</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Key Considerations</div><ul>
+<li>SGA does NOT prevent aspiration as definitively as endotracheal intubation</li>
+<li>EtCO₂ confirmation is preferred over clinical signs alone</li>
+<li>If placement unsuccessful after 2 attempts — return to BVM ventilation</li>
+<li>Pediatric SGA: size by weight using length-based tape</li>
+<li>Continuous monitoring of ventilation adequacy required throughout transport</li></ul></div></div>`},
+
+{id:'taser-dart-removal',title:'Taser Dart Removal',section:'procedures',
+tags:'taser dart barbed removal TASER conducted electrical weapon procedure',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">General Guidance</div><ul>
+<li>Some agencies treat all barbed darts as foreign bodies — leave for physician removal</li>
+<li>Others allow EMS or law enforcement to remove barbed darts EXCEPT from sensitive areas</li>
+<li>Follow local protocols, including those of law enforcement for evidence collection and retention</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">Do NOT Remove — Physician Removal Required</div><ul>
+<li>Darts in head or neck</li>
+<li>Darts in hands or feet</li>
+<li>Darts in genitals or perineum</li>
+<li>Darts embedded deeply in muscle or tissue</li>
+<li>Any dart where removal may cause further injury</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Procedure (where authorized by local protocol)</div><ul>
+<li>Before removing: ensure cartridge has been removed from the conducted electrical weapon</li>
+<li>Stabilize skin around dart insertion site</li>
+<li>Grasp dart firmly at the base (where it enters skin)</li>
+<li>Pull straight out in one smooth motion — perpendicular to skin</li>
+<li>Do NOT twist or angle during removal</li>
+<li>Control any bleeding with direct pressure</li>
+<li>Preserve dart as evidence — follow law enforcement chain of custody guidance</li>
+<li>Dress wound with appropriate bandage</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Key Considerations</div><ul>
+<li>Darts are approximately 13 mm long with barbed tips</li>
+<li>Up to two single barbed darts may be present if discharged from a distance</li>
+<li>Document number of darts found and location of each</li>
+<li>Treat associated wounds and assess for additional injuries</li></ul></div></div>`},
+
+{id:'tourniquet-application',title:'Tourniquet Application',section:'procedures',
+tags:'tourniquet hemorrhage control limb bleeding extremity CAT SOFT-T commercial tourniquet',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Indications</div><ul>
+<li>Life-threatening extremity hemorrhage not controlled by direct pressure</li>
+<li>Amputation of limb</li>
+<li>Bleeding site amenable to tourniquet placement (extremity — NOT junctional wounds)</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Procedure</div><ul>
+<li>Apply directly to BARE SKIN — 2–3 inches proximal to wound, NOT over a joint</li>
+<li>Route tail through buckle; pull tight</li>
+<li>Twist windlass rod until bleeding stops AND distal pulse is eliminated</li>
+<li>Lock windlass in place; secure clip or strap</li>
+<li>Mark time of application on tourniquet and document in PCR</li>
+<li>If bleeding continues → apply second tourniquet proximal to first</li>
+<li>Thigh wounds: consider two tourniquets side-by-side, tighten sequentially</li>
+<li>Do NOT cover tourniquet — keep visible for hospital staff</li>
+<li>Do NOT loosen or remove tourniquet in the field once applied</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Key Considerations</div><ul>
+<li>Survival markedly improved when tourniquet placed BEFORE shock develops</li>
+<li>Properly-applied tourniquet on conscious patient is painful — treat with analgesics but do NOT loosen</li>
+<li>Tourniquet should be reassessed at every stage of patient movement for ongoing hemorrhage control</li>
+<li>Most commercial tourniquets effective for children &gt;2 yr; stretch-wrap-tuck elastic type for any age</li>
+<li>Arterial pressure points (brachial, femoral) are NOT effective for controlling hemorrhage but may slow bleeding while tourniquet is applied</li>
+<li>Improper application (too loose) may worsen bleeding by occluding venous return without stopping arterial flow</li></ul></div></div>`},
+
+{id:'uncooperative-patients',title:'Uncooperative Patients / Unsecured Scenes Procedure',section:'procedures',
+tags:'uncooperative patient unsafe scene refusal AMA behavioral law enforcement staging',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Scene Safety First</div><ul>
+<li>If scene is NOT safe → leave and stage; do not enter until law enforcement secures scene</li>
+<li>Alert dispatch; request law enforcement if not already en route</li>
+<li>Document scene conditions and reason for delayed patient contact</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Approaching the Uncooperative Patient</div><ul>
+<li>Approach calmly; identify yourself and your role</li>
+<li>Use calm, non-threatening voice and body language; maintain safe distance</li>
+<li>Explain what you are doing and why</li>
+<li>Listen to patient concerns; acknowledge their feelings</li>
+<li>Avoid arguing or challenging the patient</li>
+<li>Request law enforcement assistance for physical restraint if patient is dangerous</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">Patient Refusing Care / AMA</div><ul>
+<li>Assess patient's decision-making capacity:<ul>
+<li>Patient understands the situation and condition</li>
+<li>Patient understands the risks of refusing care/transport</li>
+<li>Patient can communicate their wishes</li>
+<li>Patient's decision is not based solely on intoxication or altered mental status</li></ul></li>
+<li>Inform patient of potential consequences of refusal in clear terms</li>
+<li>Offer alternatives (treatment without transport, alternative transport)</li>
+<li>If patient has decision-making capacity and refuses → document thoroughly and have patient sign refusal form if possible</li>
+<li>Contact online medical control if unsure about patient's capacity</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Key Considerations</div><ul>
+<li>Never leave a patient who has altered mental status, intoxication, or serious illness without medical evaluation</li>
+<li>Minors cannot refuse care without parent/guardian consent (exceptions: emancipated minors)</li>
+<li>Document ALL refusals thoroughly: patient statements, mental status assessment, risks explained, alternatives offered</li>
+<li>When in doubt, contact online medical control</li>
+<li>Consider domestic violence or human trafficking in behavioral calls — question patient privately away from companions</li></ul></div></div>`},
+{id:'med-activated-charcoal',title:'Activated Charcoal',section:'medications',
+tags:'activated charcoal overdose ingestion poisoning toxicology adsorption',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Class / Mechanism</div><ul><li>Adsorbent — binds to many substances in GI tract, preventing absorption</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Indications / Contraindications</div><ul>
+<li><strong>Indications:</strong> Ingestion within ONE HOUR of EMS arrival; oral poisoning/overdose</li>
+<li><strong>Contraindications:</strong> Altered mental status or inability to protect airway; ingestion of acids, alkalis, or hydrocarbons; no gag reflex</li>
+<li><span class="ws">W*</span> Recommend contacting Poison Control prior to administration: <strong>1-800-709-0911</strong></li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">Dosing</div>
+<table class="dose-table"><thead><tr><th>Patient</th><th>Dose</th><th>Route</th></tr></thead><tbody>
+<tr><td>Adult</td><td>50 g PO</td><td>Oral (mixed with water)</td></tr>
+<tr><td>Pediatric</td><td>1 g/kg PO (min 10 g, max 50 g)</td><td>Oral</td></tr>
+</tbody></table></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Notes</div><ul>
+<li>Most effective within 1 hour of ingestion; less effective as time increases</li>
+<li>Does NOT bind: iron, lithium, alcohols, acids, alkalis, hydrocarbons, cyanide</li>
+<li>May cause vomiting — ensure airway protection</li>
+<li>EMT scope: <span class="ws">W*</span></li></ul></div></div>`},
+
+{id:'med-acetaminophen',title:'Acetaminophen (Tylenol)',section:'medications',
+tags:'acetaminophen tylenol paracetamol fever pain analgesic antipyretic',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Class / Mechanism</div><ul><li>Analgesic / Antipyretic — central mechanism; does not have significant anti-inflammatory effect</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Indications / Contraindications</div><ul>
+<li><strong>Indications:</strong> Pain management; fever reduction (temp &gt;101°F in pediatric patients)</li>
+<li><strong>Contraindications:</strong> Known hepatic disease or liver failure; allergy to acetaminophen; max dose already given within 4 hours</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">Dosing</div>
+<table class="dose-table"><thead><tr><th>Patient</th><th>Dose</th><th>Route</th><th>Max</th></tr></thead><tbody>
+<tr><td>Adult</td><td>15 mg/kg PO</td><td>PO</td><td>1 g single dose</td></tr>
+<tr><td>Pediatric</td><td>15 mg/kg PO</td><td>PO or PR (suppository)</td><td>Per weight</td></tr>
+</tbody></table></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Notes</div><ul>
+<li>EMT scope: <span class="ws">W*</span></li>
+<li>Onset: 30–60 min PO; Duration: 4–6 hours</li>
+<li>Rectal suppository if child unable to swallow or protect airway</li>
+<li>For febrile seizures: if child &gt;6 months with max acetaminophen dose &lt;4 hr ago and temp &gt;101°F, may consider ibuprofen instead</li></ul></div></div>`},
+
+{id:'med-albuterol',title:'Albuterol (Proventil / Ventolin)',section:'medications',
+tags:'albuterol proventil ventolin bronchodilator beta agonist asthma COPD wheeze nebulizer MDI',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Class / Mechanism</div><ul><li>Beta₂ Agonist / Bronchodilator — relaxes bronchial smooth muscle; also used in hyperkalemia</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Indications / Contraindications</div><ul>
+<li><strong>Indications:</strong> Bronchospasm (asthma, COPD); wheezing; anaphylaxis with wheezing; reactive airway disease</li>
+<li><strong>Contraindications:</strong> Hypersensitivity to albuterol; tachyarrhythmias</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">Dosing</div>
+<table class="dose-table"><thead><tr><th>Patient</th><th>Dose</th><th>Route</th></tr></thead><tbody>
+<tr><td>Adult</td><td>2.5 mg in 3.0 mL NS via nebulizer; may repeat PRN</td><td>Nebulizer or MDI</td></tr>
+<tr><td>Peds &lt;15 kg</td><td>2.5–5 mg via nebulizer</td><td>Nebulizer (blow-by if &lt;5 yr)</td></tr>
+<tr><td>Peds &gt;15 kg</td><td>5–10 mg via nebulizer</td><td>Nebulizer</td></tr>
+<tr><td>Continuous (peds)</td><td>2.5 mg in 3 mL for patients &lt;5 yr</td><td>Nebulizer, continuous</td></tr>
+</tbody></table></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Notes</div><ul>
+<li>EMT scope: <span class="ws">W*</span> (nebulizer/MDI); MDI assist EMR scope</li>
+<li>Onset: 5 min; Duration: 3–6 hours</li>
+<li>Side effects: tachycardia, tremors, hypokalemia, palpitations</li>
+<li>Often combined with Atrovent/Ipratropium (DuoNeb) for synergistic effect</li></ul></div></div>`},
+
+{id:'med-aspirin',title:'Aspirin (Acetylsalicylic Acid)',section:'medications',
+tags:'aspirin ASA acetylsalicylic acid ACS STEMI MI chest pain antiplatelet',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Class / Mechanism</div><ul><li>Antiplatelet agent / NSAID — irreversibly inhibits COX-1, reducing thromboxane A₂-mediated platelet aggregation</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Indications / Contraindications</div><ul>
+<li><strong>Indications:</strong> Suspected ACS/MI/STEMI; chest pain of suspected cardiac origin</li>
+<li><strong>Contraindications:</strong> Known allergy to aspirin or NSAIDs; active GI bleeding; hemorrhagic stroke; age &lt;16 (Reye syndrome risk)</li>
+<li><strong>Use caution:</strong> Asthma (may precipitate bronchospasm); recent GI bleed</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">Dosing</div>
+<table class="dose-table"><thead><tr><th>Indication</th><th>Dose</th><th>Route</th></tr></thead><tbody>
+<tr><td>ACS / Chest Pain</td><td>324 mg (typically 4 × 81 mg chewable)</td><td>PO (chew, do not swallow whole)</td></tr>
+</tbody></table></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Notes</div><ul>
+<li>EMR scope: <span class="ws">W*</span></li>
+<li>Patient should CHEW aspirin for fastest absorption</li>
+<li>Do NOT delay administration for IV access</li>
+<li>If patient has already taken aspirin today, still administer (total 324 mg if possible)</li></ul></div></div>`},
+
+{id:'med-epinephrine',title:'Epinephrine (Adrenaline)',section:'medications',
+tags:'epinephrine adrenaline epipen auto injector anaphylaxis cardiac arrest bronchospasm vasopressor',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Class / Mechanism</div><ul><li>Sympathomimetic — alpha + beta agonist; causes vasoconstriction, increased HR/contractility, bronchodilation</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Indications</div><ul>
+<li>Anaphylaxis / severe allergic reaction</li>
+<li>Cardiac arrest (AEMT scope)</li>
+<li>Bronchospasm unresponsive to albuterol</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">Dosing</div>
+<table class="dose-table"><thead><tr><th>Indication</th><th>Dose</th><th>Concentration</th><th>Route</th></tr></thead><tbody>
+<tr><td>Anaphylaxis Adult (EMT)</td><td>0.3 mg IM outer thigh; repeat ×1 after 5 min if needed</td><td>1 mg/mL</td><td>IM <span class="ws">W*</span></td></tr>
+<tr><td>Anaphylaxis Peds (EMT)</td><td>0.01 mg/kg IM (max 0.3 mg) or 0.15 mg auto-injector</td><td>1 mg/mL</td><td>IM <span class="ws">W*</span></td></tr>
+<tr><td>Anaphylaxis Adult (AEMT)</td><td>0.3 mg IM</td><td>1 mg/mL</td><td>IM</td></tr>
+<tr><td>Cardiac Arrest Adult (AEMT)</td><td>1 mg IV/IO q 3–5 min</td><td>1 mg/10 mL (1:10,000) <span class="ws">W*</span></td><td>IV/IO</td></tr>
+<tr><td>Cardiac Arrest Peds (AEMT)</td><td>0.01 mg/kg IV/IO</td><td>1:10,000 <span class="ws">W*</span></td><td>IV/IO</td></tr>
+<tr><td>Auto-Injector (EMR)</td><td>Per manufacturer — adult or pediatric</td><td>—</td><td>Outer thigh IM</td></tr>
+</tbody></table></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Notes</div><ul>
+<li>Avoid injection in affected extremity in bites/stings when possible</li>
+<li>Side effects: tachycardia, hypertension, anxiety, tremors, palpitations</li>
+<li>Epi 1:1,000 = 1 mg/mL (IM use); Epi 1:10,000 = 0.1 mg/mL (IV/IO use)</li></ul></div></div>`},
+
+{id:'med-naloxone',title:'Naloxone (Narcan)',section:'medications',
+tags:'naloxone narcan opioid reversal overdose narcotic heroin fentanyl respiratory depression IN IM IV',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Class / Mechanism</div><ul><li>Opioid antagonist — competitively displaces opioids from mu receptors; reverses respiratory depression, sedation, analgesia</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Indications / Contraindications</div><ul>
+<li><strong>Indications:</strong> Suspected opioid overdose with respiratory depression; altered mental status with possible opioid use</li>
+<li><strong>Contraindications:</strong> Known hypersensitivity; do NOT give to newborns</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">Dosing</div>
+<table class="dose-table"><thead><tr><th>Level</th><th>Patient</th><th>Dose</th><th>Route</th></tr></thead><tbody>
+<tr><td>EMR</td><td>Adult</td><td>0.4–4 mg IN; repeat q2–3 min up to 10 mg</td><td>IN (nasal atomizer)</td></tr>
+<tr><td>EMR</td><td>Pediatric</td><td>0.1 mg/kg IN (max 2 mg/dose); q2–3 min up to 10 mg</td><td>IN</td></tr>
+<tr><td>EMT <span class="ws">W*</span></td><td>Adult</td><td>0.4–4 mg IM; repeat q2–3 min up to 10 mg</td><td>IM</td></tr>
+<tr><td>EMT <span class="ws">W*</span></td><td>Pediatric</td><td>0.1 mg/kg IM (max 2 mg/dose) up to 10 mg</td><td>IM</td></tr>
+<tr><td>AEMT</td><td>Adult</td><td>0.4–2 mg IV/IO; repeat q2–3 min, max 10 mg</td><td>IV/IO</td></tr>
+<tr><td>AEMT</td><td>Pediatric</td><td>0.1 mg/kg IV q2–3 min; max 2 mg/dose; max 10 mg total</td><td>IV</td></tr>
+<tr><td>Respiratory Distress (EMR)</td><td>Adult</td><td>2.0 mg IN (if cause unknown or narcotics possible)</td><td>IN</td></tr>
+</tbody></table></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Notes</div><ul>
+<li>Duration of action (30–60 min) may be SHORTER than the opioid — patient can re-sedate; monitor continuously</li>
+<li>High-potency opioids (fentanyl, carfentanil) may require multiple doses</li>
+<li>If narcotic OD/hypoglycemia suspected, administer Narcan/Glucose PRIOR to SGA</li>
+<li>Do NOT give to newborns during initial resuscitation</li>
+<li>Withdrawal precipitated by Narcan can cause agitation, vomiting, acute pain — be prepared</li></ul></div></div>`},
+
+{id:'med-nitroglycerin',title:'Nitroglycerin (NTG)',section:'medications',
+tags:'nitroglycerin nitro NTG sublingual chest pain ACS angina vasodilator cardiac',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Class / Mechanism</div><ul><li>Nitrate / Vasodilator — relaxes vascular smooth muscle; reduces preload and myocardial oxygen demand; dilates coronary arteries</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Indications / Contraindications</div><ul>
+<li><strong>Indications:</strong> Chest pain of suspected cardiac origin; acute pulmonary edema (AEMT)</li>
+<li><strong>Contraindications:</strong> SBP &lt;100 mmHg; use of Viagra/Cialis/Levitra (sildenafil/tadalafil/vardenafil) within 24–48 hours; RV infarction; hypersensitivity to nitrates</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">Dosing</div>
+<table class="dose-table"><thead><tr><th>Level</th><th>Dose</th><th>Route</th><th>Repeat</th></tr></thead><tbody>
+<tr><td>EMT <span class="ws">W*</span> (patient's own)</td><td>0.4 mg SL</td><td>Sublingual tablet or spray</td><td>May repeat ×2 every 3–5 min if SBP &gt;100</td></tr>
+<tr><td>AEMT</td><td>0.4 mg SL</td><td>Sublingual</td><td>Repeat ×2 every 3–5 min OR Nitro Paste 1 inch to chest wall</td></tr>
+</tbody></table></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Notes</div><ul>
+<li>Obtain IV/IO access BEFORE NTG administration (EMT w/ IV endorsement)</li>
+<li>Check BP before each dose — hold if SBP &lt;100 mmHg</li>
+<li>Side effects: headache, hypotension, tachycardia, dizziness</li>
+<li>Ask specifically about erectile dysfunction medications — combination causes life-threatening hypotension</li></ul></div></div>`},
+
+{id:'med-ondansetron',title:'Ondansetron (Zofran)',section:'medications',
+tags:'ondansetron zofran antiemetic nausea vomiting ODT sublingual serotonin antagonist',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Class / Mechanism</div><ul><li>Serotonin (5-HT₃) antagonist / Antiemetic — blocks serotonin receptors in GI tract and CNS</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Indications / Contraindications</div><ul>
+<li><strong>Indications:</strong> Nausea and vomiting</li>
+<li><strong>Contraindications:</strong> Known hypersensitivity; caution with QT prolongation risk</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">Dosing</div>
+<table class="dose-table"><thead><tr><th>Level</th><th>Patient</th><th>Dose</th><th>Route</th></tr></thead><tbody>
+<tr><td>EMT <span class="ws">W*</span></td><td>Adult</td><td>4–8 mg SL ODT</td><td>Sublingual dissolving tablet</td></tr>
+<tr><td>EMT <span class="ws">W*</span></td><td>Peds 1–5 yr</td><td>2 mg SL</td><td>Sublingual</td></tr>
+<tr><td>EMT <span class="ws">W*</span></td><td>Peds ≥6 yr</td><td>4 mg ODT</td><td>Sublingual dissolving tablet</td></tr>
+<tr><td>AEMT</td><td>Adult</td><td>4 mg IM/IV</td><td>IM or IV</td></tr>
+<tr><td>AEMT</td><td>Peds 1–5 yr</td><td>2 mg SL</td><td>Sublingual</td></tr>
+<tr><td>AEMT</td><td>Peds ≥6 yr</td><td>4 mg ODT</td><td>Sublingual</td></tr>
+</tbody></table></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Notes</div><ul>
+<li>Onset: 30 min (PO/SL); 5–10 min (IV); Duration: 4–8 hours</li>
+<li>May cause headache, constipation, dizziness</li>
+<li>PO also authorized for EMT scope: <span class="ws">W*</span></li></ul></div></div>`},
+
+{id:'med-diphenhydramine',title:'Diphenhydramine (Benadryl)',section:'medications',
+tags:'diphenhydramine benadryl antihistamine allergic reaction anaphylaxis dystonic reaction H1 blocker',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Class / Mechanism</div><ul><li>H1 Antihistamine / Anticholinergic — blocks histamine receptors; also has sedative and antiemetic properties</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Indications / Contraindications</div><ul>
+<li><strong>Indications:</strong> Allergic reaction / anaphylaxis (adjunct to epinephrine); dystonic reactions / phenothiazine reactions</li>
+<li><strong>Contraindications:</strong> Hypersensitivity; narrow-angle glaucoma; lower respiratory disease (may thicken secretions)</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">Dosing</div>
+<table class="dose-table"><thead><tr><th>Level</th><th>Patient</th><th>Dose</th><th>Route</th><th>Max</th></tr></thead><tbody>
+<tr><td>EMT <span class="ws">W*</span></td><td>Adult</td><td>50 mg PO</td><td>PO</td><td>50 mg</td></tr>
+<tr><td>EMT <span class="ws">W*</span></td><td>Pediatric</td><td>1 mg/kg PO (up to 25 mg)</td><td>PO</td><td>25 mg</td></tr>
+<tr><td>AEMT</td><td>Adult</td><td>1 mg/kg IV (IM if no IV)</td><td>IV/IM/PO</td><td>50 mg</td></tr>
+<tr><td>AEMT</td><td>Pediatric</td><td>1 mg/kg IV/IM</td><td>IV/IM</td><td>50 mg</td></tr>
+<tr><td>Dystonic (EMT w/IV)</td><td>Adult</td><td>12.5–50 mg IV/IM</td><td>IV/IM</td><td>50 mg</td></tr>
+<tr><td>Dystonic (EMT w/IV)</td><td>Pediatric</td><td>1 mg/kg IM</td><td>IM</td><td>25 mg</td></tr>
+</tbody></table></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Notes</div><ul>
+<li>Epinephrine is FIRST-LINE for anaphylaxis — diphenhydramine is adjunct only</li>
+<li>Side effects: sedation, anticholinergic effects (dry mouth, urinary retention, tachycardia)</li>
+<li>Onset: 15–30 min PO; 5 min IV; Duration: 4–6 hours</li></ul></div></div>`},
+
+{id:'med-ibuprofen',title:'Ibuprofen',section:'medications',
+tags:'ibuprofen advil motrin NSAID anti-inflammatory pain fever analgesic',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Class / Mechanism</div><ul><li>NSAID / Analgesic / Antipyretic — inhibits COX-1 and COX-2; reduces prostaglandin synthesis; anti-inflammatory, analgesic, antipyretic</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Indications / Contraindications</div><ul>
+<li><strong>Indications:</strong> Pain management; fever reduction in patients &gt;6 months</li>
+<li><strong>Contraindications:</strong> Age &lt;6 months; known hypersensitivity to NSAIDs; active GI bleed; significant renal impairment; pregnancy (especially third trimester)</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">Dosing</div>
+<table class="dose-table"><thead><tr><th>Patient</th><th>Dose</th><th>Route</th><th>Max</th></tr></thead><tbody>
+<tr><td>Adult</td><td>400–800 mg PO</td><td>PO</td><td>800 mg per dose</td></tr>
+<tr><td>Pediatric (&gt;6 mo)</td><td>10 mg/kg PO</td><td>PO</td><td>800 mg per dose</td></tr>
+</tbody></table></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Notes</div><ul>
+<li>EMT scope: <span class="ws">W*</span></li>
+<li>Onset: 30–60 min; Duration: 4–8 hours</li>
+<li>For febrile seizure: consider if child &gt;6 months has already had max acetaminophen dose &lt;4 hr ago and temp &gt;101°F</li>
+<li>Side effects: GI upset, GI bleed risk, renal impairment with prolonged use</li></ul></div></div>`},
+
+{id:'med-glucose',title:'Dextrose — Oral Glucose / D10W / D25W / D50W',section:'medications',
+tags:'dextrose glucose oral glucose D10 D25 D50 hypoglycemia blood sugar diabetic',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Class / Mechanism</div><ul><li>Carbohydrate / Caloric agent — provides immediate glucose to treat hypoglycemia</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Indications</div><ul>
+<li>Hypoglycemia (blood glucose &lt;60 mg/dL in adults; symptomatic hypoglycemia in pediatric patients)</li>
+<li>Altered mental status with suspected hypoglycemia</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">Dosing</div>
+<table class="dose-table"><thead><tr><th>Product</th><th>Dose</th><th>Route</th><th>Level</th></tr></thead><tbody>
+<tr><td>Oral Glucose (gel/paste)</td><td>Adult: 25 g (1 tube) | Peds: 0.5–1 g/kg (max 25 g)</td><td>PO — patient must be able to protect airway</td><td>EMR <span class="ws">W*</span></td></tr>
+<tr><td>D10W (10% Dextrose)</td><td>Adult: titrate to effect up to 25 g | Peds: 5 mL/kg by infusion (max 250 mL) | Newborn: 2 cc/kg</td><td>IV</td><td>EMT w/IV <span class="ws">W*</span></td></tr>
+<tr><td>D25W (25% Dextrose)</td><td>2 mL/kg IV (max 50 mL)</td><td>IV</td><td>AEMT</td></tr>
+<tr><td>D50W (50% Dextrose)</td><td>25 g (50 mL) IV for adults</td><td>IV</td><td>AEMT</td></tr>
+</tbody></table></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Notes</div><ul>
+<li>Check BGL after 5 min; repeat treatment if still &lt;60 mg/dL and patient remains symptomatic</li>
+<li>Higher concentrations (D25, D50) cause vein irritation and extravasation risk — use large bore IV, confirm placement</li>
+<li>D10 preferred in prehospital setting for IV use (lower osmolarity, safer)</li>
+<li>Oral glucose ONLY if patient can protect airway — never in unconscious patient</li></ul></div></div>`},
+
+{id:'med-glucagon',title:'Glucagon',section:'medications',
+tags:'glucagon hypoglycemia diabetic IM IN beta blocker calcium channel blocker',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Class / Mechanism</div><ul><li>Pancreatic hormone — stimulates hepatic glycogenolysis, raising blood glucose; also used in beta-blocker/calcium channel blocker overdose</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Indications</div><ul>
+<li>Symptomatic hypoglycemia when patient cannot take oral glucose (unconscious, cannot protect airway)</li>
+<li>Beta-blocker or calcium channel blocker overdose (ALS-level consideration)</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">Dosing</div>
+<table class="dose-table"><thead><tr><th>Level</th><th>Patient</th><th>Dose</th><th>Route</th></tr></thead><tbody>
+<tr><td>EMT <span class="ws">W*</span></td><td>Adult</td><td>1 mg (1 unit)</td><td>IM / IN</td></tr>
+<tr><td>EMT <span class="ws">W*</span></td><td>Pediatric</td><td>0.02 mg/kg IM (max 1 mg)</td><td>IM</td></tr>
+<tr><td>AEMT</td><td>Adult</td><td>1 mg IM</td><td>IM</td></tr>
+</tbody></table></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Notes</div><ul>
+<li>Onset: 8–10 min IM; Duration: 60–90 min</li>
+<li>Requires hepatic glycogen stores to work — may be ineffective in malnourished or alcoholic patients</li>
+<li>Check BGL again in 10–15 min; transport even if glucose normalizes</li>
+<li>Patient may vomit after administration — protect airway</li></ul></div></div>`},
+
+{id:'med-oxygen',title:'Oxygen (O₂)',section:'medications',
+tags:'oxygen O2 supplemental hypoxia saturation SpO2 nasal cannula NRB non-rebreather mask BVM',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Class / Mechanism</div><ul><li>Medical gas — essential for cellular metabolism; corrects hypoxemia and tissue hypoxia</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Delivery Devices &amp; Flow Rates</div>
+<table class="dose-table"><thead><tr><th>Device</th><th>Flow</th><th>FiO₂</th><th>Level</th></tr></thead><tbody>
+<tr><td>Nasal Cannula</td><td>1–6 L/min</td><td>24–44%</td><td>EMR</td></tr>
+<tr><td>Simple Face Mask</td><td>6–10 L/min</td><td>35–60%</td><td>EMT</td></tr>
+<tr><td>Non-Rebreather Mask (NRB)</td><td>10–15 L/min</td><td>60–90%</td><td>EMR</td></tr>
+<tr><td>Partial Rebreather Mask</td><td>6–10 L/min</td><td>35–60%</td><td>EMT</td></tr>
+<tr><td>Venturi Mask</td><td>Per port</td><td>24–50% (controlled)</td><td>EMT</td></tr>
+<tr><td>BVM</td><td>15 L/min</td><td>~100% (w/ reservoir)</td><td>EMR</td></tr>
+<tr><td>CPAP</td><td>15 L/min</td><td>Variable</td><td>EMT <span class="ws">W*</span></td></tr>
+</tbody></table></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Target SpO₂ Ranges</div><ul>
+<li><strong>Most conditions:</strong> SpO₂ 94–99%</li>
+<li><strong>Stroke:</strong> SpO₂ 94–95%</li>
+<li><strong>Post-ROSC:</strong> SpO₂ 94–99% (avoid hyperoxia)</li>
+<li><strong>CO poisoning:</strong> 100% O₂ via NRB (pulse oximetry unreliable — reads SpO₂ falsely normal)</li>
+<li><strong>COPD:</strong> Titrate to 88–92% if patient is a known CO₂ retainer (avoid suppressing hypoxic drive)</li>
+<li>Do NOT withhold O₂ from hypoxic patient out of COPD concern — hypoxia kills first</li></ul></div></div>`},
+
+{id:'med-oxymetazoline',title:'Oxymetazoline (Afrin)',section:'medications',
+tags:'oxymetazoline afrin nasal decongestant epistaxis nosebleed vasoconstrictor intranasal',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Class / Mechanism</div><ul><li>Alpha-adrenergic agonist / Topical nasal vasoconstrictor — constricts nasal blood vessels; reduces nasal congestion and epistaxis</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Indications / Contraindications</div><ul>
+<li><strong>Indications:</strong> Epistaxis (nosebleed) uncontrolled by direct pressure; nasal mucosal bleeding</li>
+<li><strong>Contraindications:</strong> Age &lt;6 years; known hypersensitivity</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">Dosing</div>
+<table class="dose-table"><thead><tr><th>Patient</th><th>Dose</th><th>Route</th><th>Level</th></tr></thead><tbody>
+<tr><td>Adult / Pediatric ≥6 yr</td><td>2–3 squirts each nostril IN</td><td>Intranasal</td><td>EMT <span class="ws">W*</span> / AEMT</td></tr>
+</tbody></table></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Notes</div><ul>
+<li>Onset: 5–10 min; Duration: 6–12 hours</li>
+<li>Do NOT use in children under 6 years</li>
+<li>Side effects: rebound congestion with prolonged use, hypertension, tachycardia</li></ul></div></div>`},
+
+{id:'med-ipratropium',title:'Ipratropium Bromide (Atrovent / Ipramide)',section:'medications',
+tags:'ipratropium atrovent ipramide anticholinergic bronchodilator COPD asthma nebulizer',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Class / Mechanism</div><ul><li>Anticholinergic / Bronchodilator — blocks muscarinic receptors in bronchial smooth muscle; reduces bronchoconstriction and secretions</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Indications</div><ul>
+<li>Bronchospasm (asthma, COPD) — typically used in combination with albuterol (DuoNeb)</li>
+<li>Respiratory distress with reactive airway disease</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">Dosing</div>
+<table class="dose-table"><thead><tr><th>Patient</th><th>Dose</th><th>Route</th><th>Level</th></tr></thead><tbody>
+<tr><td>Adult</td><td>0.5 mg in 2.5 mL via nebulizer</td><td>Nebulizer</td><td>EMT <span class="ws">W*</span></td></tr>
+<tr><td>Pediatric</td><td>0.25 mg in 3.0 mL NS SVN</td><td>Nebulizer</td><td>EMT <span class="ws">W*</span></td></tr>
+</tbody></table></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Notes</div><ul>
+<li>Onset: 15 min; Peak: 1–2 hours; Duration: 4–6 hours</li>
+<li>Often combined with albuterol as DuoNeb for synergistic bronchodilation</li>
+<li>Side effects: dry mouth, urinary retention, tachycardia, blurred vision</li>
+<li>Less effective as monotherapy than albuterol for acute bronchospasm</li></ul></div></div>`},
+
+{id:'med-pralidoxime',title:'Pralidoxime Chloride (2-PAM Chloride)',section:'medications',
+tags:'pralidoxime 2PAM chloride organophosphate nerve agent antidote cholinergic SLUDGE insecticide',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Class / Mechanism</div><ul><li>Cholinesterase reactivator / Nerve agent antidote — reactivates acetylcholinesterase inhibited by organophosphates (if given early); relieves nicotinic effects</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Indications</div><ul>
+<li>Organophosphate poisoning (insecticides, nerve agents)</li>
+<li>Symptoms: SLUDGE — Salivation, Lacrimation, Urination, Defecation, GI distress, Emesis; PLUS miosis, bronchospasm, bradycardia, seizures</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">Dosing</div>
+<table class="dose-table"><thead><tr><th>Patient</th><th>Dose</th><th>Route</th><th>Level</th></tr></thead><tbody>
+<tr><td>Adult</td><td>1 auto-injector (600 mg) IM into thigh; may repeat depending on symptoms</td><td>IM</td><td>EMR (auto-injector)</td></tr>
+</tbody></table></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Notes</div><ul>
+<li>Used alongside Atropine auto-injector (Mark I kit or DuoDote)</li>
+<li>Must be given EARLY — becomes less effective as organophosphate-enzyme bond ages ("ages")</li>
+<li>Scene safety paramount — decontamination before patient contact in organophosphate exposure</li>
+<li>Prepare for copious secretions; suction as needed</li>
+<li>Atropine addresses muscarinic (SLUDGE) effects; 2-PAM reactivates cholinesterase and addresses nicotinic (muscle weakness) effects</li></ul></div></div>`},
+{id:'general-illness',title:'General Illness',section:'medical',
+tags:'general illness sick fever abdominal distension altered consciousness nausea infection cancer sepsis cardiac',
+body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
+<div class="assess">
+<div class="assess-col"><div class="assess-head">History</div>
+<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<li>Duration; Past medical history; Last oral intake</li>
+<li>Medications; Immunocompromised</li>
+<li>Bloody emesis/diarrhea; Menstrual history</li>
+<li>Past surgical history; Environmental exposure/travel history; Age</li></ul></div>
+<div class="assess-col"><div class="assess-head">Signs / Symptoms</div><ul>
+<li>Abdominal distension</li>
+<li class="b">Altered Level of Consciousness</li>
+<li>Chills/Rigors; Constipation; Diarrhea</li>
+<li>Diaphoretic; Warm; Flushed; Pain</li>
+<li class="b">Persistent abnormal vital signs</li>
+<li class="b">Shortness of Breath</li></ul></div>
+<div class="assess-col"><div class="assess-head">Differential</div><ul>
+<li>Cancer/Tumors/Lymphomas; CNS disease/trauma</li>
+<li>DKA; Electrolyte abnormalities</li>
+<li>Gynecologic disease (ovarian cyst, PID)</li>
+<li>Heat Stroke; Hyperthyroid GI/Renal disorders</li>
+<li>Infections; Medication/drug reaction</li>
+<li>Myocardial infarction; Pregnancy; Psychologic; Sepsis</li></ul></div></div>
+<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
+<li>Initiate Universal Patient Care protocol</li>
+<li>Place patient in position of comfort</li>
+<li>Cardiac High-Risk Score → Chest Pain/ACS/MI/STEMI protocol</li>
+<li>Sepsis Screening Tool → Sepsis protocol</li>
+<li>Stroke Assessment (FAST/BEFAST/LAMS) → Stroke/TIA/Neurological protocol</li>
+<li><span class="ws">W*</span> Check blood glucose level</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
+<li>Consider ECG / 12-lead if available</li>
+<li><span class="ws">W*</span> Consider End-Tidal CO₂ if available</li>
+<li>Treat pain per Pain Management protocol</li>
+<li>Treat nausea/vomiting per Nausea/Vomiting protocol</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">EMT w/ IV Endorsement / AEMT</div><ul>
+<li>Consider Vascular Access</li>
+<li>SBP &lt;90 mmHg → Shock/Hypotension protocol</li></ul></div></div>`},
+
+{id:'normal-vital-signs',title:'Normal Vital Signs — Reference',section:'admin',
+tags:'vital signs normal range blood pressure heart rate respiratory rate temperature pediatric adult',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Adult Normal Ranges</div>
+<table class="dose-table"><thead><tr><th>Parameter</th><th>Normal Range</th></tr></thead><tbody>
+<tr><td>Systolic BP</td><td>90–140 mmHg</td></tr>
+<tr><td>Diastolic BP</td><td>60–90 mmHg</td></tr>
+<tr><td>Heart Rate</td><td>60–100 bpm</td></tr>
+<tr><td>Respiratory Rate</td><td>12–20 breaths/min</td></tr>
+<tr><td>SpO₂</td><td>94–100%</td></tr>
+<tr><td>Temperature</td><td>97–99.5°F (36.1–37.5°C)</td></tr>
+<tr><td>Blood Glucose</td><td>70–120 mg/dL</td></tr>
+<tr><td>EtCO₂</td><td>35–45 mmHg</td></tr>
+</tbody></table></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Pediatric Normal Ranges by Age</div>
+<table class="dose-table"><thead><tr><th>Age</th><th>HR (bpm)</th><th>RR (/min)</th><th>Min SBP</th></tr></thead><tbody>
+<tr><td>Newborn (0–1 mo)</td><td>100–160</td><td>30–60</td><td>&gt;60 mmHg</td></tr>
+<tr><td>Infant (1–12 mo)</td><td>100–150</td><td>25–50</td><td>&gt;70 mmHg</td></tr>
+<tr><td>Toddler (1–3 yr)</td><td>90–140</td><td>20–30</td><td>&gt;72 mmHg</td></tr>
+<tr><td>Preschool (3–6 yr)</td><td>80–120</td><td>20–25</td><td>&gt;76 mmHg</td></tr>
+<tr><td>School age (6–12 yr)</td><td>70–110</td><td>15–20</td><td>&gt;84 mmHg</td></tr>
+<tr><td>Adolescent (12–18 yr)</td><td>60–100</td><td>12–20</td><td>&gt;90 mmHg</td></tr>
+</tbody></table>
+<p style="font-size:12px;padding:6px 0;color:var(--txt2)">Min Pediatric SBP formula: 70 + (2 × age in years) for &gt;1 yr</p></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Key Thresholds</div><ul>
+<li><strong>Hypotension (adult):</strong> SBP &lt;90 mmHg → treat per Shock/Hypotension protocol</li>
+<li><strong>Fever:</strong> Temp &gt;100.4°F (38°C)</li>
+<li><strong>Hypothermia:</strong> Core temp &lt;95°F (35°C)</li>
+<li><strong>Hypoglycemia:</strong> Blood glucose &lt;60 mg/dL</li>
+<li><strong>Hyperglycemia:</strong> Blood glucose &gt;250 mg/dL (symptomatic)</li>
+<li><strong>Sepsis HR:</strong> &gt;90 bpm AND RR &gt;22 (plus infection and EtCO₂ &lt;26)</li></ul></div></div>`},
+
+{id:'mnemonics',title:'Mnemonics — Quick Reference',section:'admin',
+tags:'SAMPLE OPQRST FAST BEFAST LAMS MARCHH AEIOU TIPS Hs Ts mnemonics memory assessment',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">SAMPLE — Patient History</div><ul>
+<li><strong>S</strong> — Signs and Symptoms</li>
+<li><strong>A</strong> — Allergies</li>
+<li><strong>M</strong> — Medications</li>
+<li><strong>P</strong> — Pertinent Past Medical History</li>
+<li><strong>L</strong> — Last oral intake (food/fluids/meds)</li>
+<li><strong>E</strong> — Events leading up to presentation</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">OPQRST — Pain Assessment</div><ul>
+<li><strong>O</strong> — Onset (when did it start?)</li>
+<li><strong>P</strong> — Palliation / Provocation (what makes it better or worse?)</li>
+<li><strong>Q</strong> — Quality (sharp, dull, crampy, pressure, burning?)</li>
+<li><strong>R</strong> — Region / Radiation / Referred</li>
+<li><strong>S</strong> — Severity (0–10 scale)</li>
+<li><strong>T</strong> — Time (duration, constant vs. intermittent)</li></ul></div>
+<div class="lv sga-lv"><div class="lv-tag sga-tag">FAST / BEFAST — Stroke Assessment</div><ul>
+<li><strong>B</strong> — Balance (sudden loss)</li>
+<li><strong>E</strong> — Eyes (sudden vision change)</li>
+<li><strong>F</strong> — Face drooping (ask patient to smile)</li>
+<li><strong>A</strong> — Arm weakness (ask patient to raise both arms)</li>
+<li><strong>S</strong> — Speech difficulty (ask patient to repeat a phrase)</li>
+<li><strong>T</strong> — Time to call 911 / last known well time</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">MARCHH — Trauma Primary Survey</div><ul>
+<li><strong>M</strong> — Massive Hemorrhage control</li>
+<li><strong>A</strong> — Airway management</li>
+<li><strong>R</strong> — Respirations / Breathing</li>
+<li><strong>C</strong> — Circulation assessment</li>
+<li><strong>H</strong> — Head injury / neurological assessment</li>
+<li><strong>H</strong> — Hypothermia prevention</li></ul></div>
+<div class="lv aemt-lv"><div class="lv-tag aemt-tag">Hs and Ts — Cardiac Arrest Reversible Causes</div><ul>
+<li><strong>Hs:</strong> Hypovolemia · Hypoxia · H⁺ ions (Acidosis) · Hyper/Hypokalemia · Hypothermia · Hypoglycemia</li>
+<li><strong>Ts:</strong> Toxins · Tamponade (cardiac) · Tension Pneumothorax · Thrombosis (pulmonary/coronary) · Trauma</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">More Mnemonics</div><ul>
+<li><strong>AEIOU-TIPS</strong> (AMS): Alcohol/Acidosis · Epilepsy/Electrolytes/Endocrine · Insulin · Opiates/Overdose/Oxygen · Uremia · Trauma · Infection · Psychiatric/Poisoning · Syncope/Stroke/Seizure</li>
+<li><strong>SLUDGE</strong> (Organophosphate/Cholinergic): Salivation · Lacrimation · Urination · Defecation · GI distress · Emesis</li>
+<li><strong>DUMBBELS</strong> (Cholinergic): Defecation · Urination · Miosis · Bradycardia/Bronchospasm · Emesis · Lacrimation · Salivation</li>
+<li><strong>AVPU</strong> (LOC): Alert · Verbal (responds to voice) · Pain (responds to pain) · Unresponsive</li>
+<li><strong>LAMS</strong> (Large Vessel Occlusion): Facial droop (0–1) + Arm weakness (0–2) + Grip strength (0–2) — score ≥4 suggests LVO</li></ul></div></div>`},
+
+{id:'drug-reference',title:'Drug Quick Reference — Doses at a Glance',section:'admin',
+tags:'drug reference doses medications quick reference cheat sheet field guide',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Critical Drug Doses — Adult</div>
+<table class="dose-table"><thead><tr><th>Drug</th><th>Indication</th><th>Dose</th><th>Route</th><th>Level</th></tr></thead><tbody>
+<tr><td>Aspirin</td><td>ACS/Chest Pain</td><td>324 mg</td><td>PO (chew)</td><td>EMR W*</td></tr>
+<tr><td>Epinephrine</td><td>Anaphylaxis</td><td>0.3 mg</td><td>IM outer thigh</td><td>EMT W*</td></tr>
+<tr><td>Epinephrine</td><td>Cardiac Arrest</td><td>1 mg q3–5 min</td><td>IV/IO</td><td>AEMT W*</td></tr>
+<tr><td>Naloxone</td><td>Opioid OD (IN)</td><td>0.4–4 mg; repeat q2–3 min</td><td>IN</td><td>EMR</td></tr>
+<tr><td>Naloxone</td><td>Opioid OD (IM)</td><td>0.4–4 mg; repeat q2–3 min</td><td>IM</td><td>EMT W*</td></tr>
+<tr><td>Nitroglycerin</td><td>Chest Pain (SBP &gt;100)</td><td>0.4 mg; repeat ×2 q3–5 min</td><td>SL</td><td>EMT W*</td></tr>
+<tr><td>Albuterol</td><td>Bronchospasm</td><td>2.5 mg in 3 mL NS</td><td>Nebulizer</td><td>EMT W*</td></tr>
+<tr><td>Ondansetron</td><td>Nausea/Vomiting</td><td>4–8 mg ODT</td><td>SL</td><td>EMT W*</td></tr>
+<tr><td>Acetaminophen</td><td>Pain / Fever</td><td>15 mg/kg; max 1 g</td><td>PO</td><td>EMT W*</td></tr>
+<tr><td>Ibuprofen</td><td>Pain / Fever</td><td>10 mg/kg; max 800 mg</td><td>PO</td><td>EMT W*</td></tr>
+<tr><td>Diphenhydramine</td><td>Allergic Reaction</td><td>50 mg PO</td><td>PO</td><td>EMT W*</td></tr>
+<tr><td>Oral Glucose</td><td>Hypoglycemia (&lt;60 mg/dL)</td><td>25 g (1 tube)</td><td>PO</td><td>EMR W*</td></tr>
+<tr><td>Glucagon</td><td>Hypoglycemia (no IV)</td><td>1 mg (1 unit)</td><td>IM/IN</td><td>EMT W*</td></tr>
+<tr><td>D10W</td><td>Hypoglycemia</td><td>Titrate to effect up to 25 g</td><td>IV</td><td>EMT W*/W**</td></tr>
+<tr><td>Activated Charcoal</td><td>Ingestion &lt;1 hr</td><td>50 g PO</td><td>PO</td><td>EMT W*</td></tr>
+</tbody></table></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Critical Drug Doses — Pediatric</div>
+<table class="dose-table"><thead><tr><th>Drug</th><th>Dose</th><th>Max</th></tr></thead><tbody>
+<tr><td>Epinephrine (Anaphylaxis)</td><td>0.01 mg/kg IM (1 mg/mL)</td><td>0.3 mg</td></tr>
+<tr><td>Epinephrine (Arrest)</td><td>0.01 mg/kg IV/IO (1:10,000)</td><td>—</td></tr>
+<tr><td>Naloxone IN</td><td>0.1 mg/kg IN</td><td>2 mg/dose; 10 mg total</td></tr>
+<tr><td>Albuterol &lt;15 kg</td><td>2.5–5 mg neb</td><td>—</td></tr>
+<tr><td>Albuterol &gt;15 kg</td><td>5–10 mg neb</td><td>—</td></tr>
+<tr><td>Ondansetron 1–5 yr</td><td>2 mg SL</td><td>—</td></tr>
+<tr><td>Ondansetron ≥6 yr</td><td>4 mg ODT</td><td>—</td></tr>
+<tr><td>Acetaminophen</td><td>15 mg/kg PO or PR</td><td>—</td></tr>
+<tr><td>Ibuprofen (&gt;6 mo)</td><td>10 mg/kg PO</td><td>800 mg</td></tr>
+<tr><td>Diphenhydramine</td><td>1 mg/kg PO</td><td>25 mg (PO); 50 mg (IV)</td></tr>
+<tr><td>Oral Glucose</td><td>0.5–1 g/kg</td><td>25 g</td></tr>
+<tr><td>Glucagon</td><td>0.02 mg/kg IM</td><td>1 mg</td></tr>
+<tr><td>D10W</td><td>5 mL/kg by infusion</td><td>250 mL total</td></tr>
+<tr><td>Fluid bolus (shock)</td><td>20 mL/kg NS/LR</td><td>60 mL/kg total</td></tr>
+</tbody></table></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Poison Control / Key Numbers</div><ul>
+<li><strong>Poison Control:</strong> 1-800-709-0911 (24/7)</li>
+<li><strong>National Human Trafficking Hotline:</strong> 1-888-373-7888</li>
+<li><strong>CPS (Child Protective Services, 24 hr):</strong> 800-562-5624</li>
+<li><strong>Adult Protective Services (APS, 24 hr):</strong> 877-734-6277</li>
+<li><strong>WA State Complaint Resolution (Facility Abuse):</strong> 800-562-6078</li></ul></div></div>`},
+
+{id:'release-of-responsibility',title:'Release of Responsibility / Against Medical Advice (AMA)',section:'admin',
+tags:'AMA against medical advice refusal ROR release responsibility decision making capacity',
+body:`<div class="mgmt">
+<div class="lv emr-lv"><div class="lv-tag emr-tag">Release of Responsibility (ROR) — All Conditions Must Be Met</div><ul>
+<li>No substantial medical intervention has been rendered by EMS</li>
+<li>There is no potential risk for loss of life or limb</li>
+<li>It is reasonable not to expect a recurrence of the condition within the next 6 hours</li>
+<li>There is an individual with adequate decision-making capacity who can observe the patient for a reasonable amount of time</li>
+<li>No adult online medical control contact is necessary under these criteria</li></ul></div>
+<div class="lv emt-lv"><div class="lv-tag emt-tag">Decision-Making Capacity Checklist</div><ul>
+<li>Patient understands the nature of their condition</li>
+<li>Patient understands the proposed treatment and its risks/benefits</li>
+<li>Patient understands the consequences of refusing treatment/transport</li>
+<li>Patient can communicate a consistent decision</li>
+<li>Decision is not solely the result of intoxication or psychiatric crisis</li></ul></div>
+<div class="lv iv-lv"><div class="lv-tag iv-tag">AMA Procedure</div><ul>
+<li>Explain clearly the potential risks of refusal in terms patient can understand</li>
+<li>Offer alternatives: treatment without transport, alternative transport, patient's own physician</li>
+<li>Document patient's decision in their own words as much as possible</li>
+<li>Have patient sign refusal form if possible; document if patient refuses to sign</li>
+<li>Have a witness sign if available</li>
+<li>Advise patient to call 911 again if condition changes or worsens</li>
+<li>Contact online medical control if capacity is in question</li></ul></div>
+<div class="lv consider-lv"><div class="lv-tag consider-tag">Special Situations</div><ul>
+<li>Minors CANNOT refuse care without parent/guardian consent (exception: emancipated minors)</li>
+<li>Intoxicated patients generally lack decision-making capacity — do not accept refusal</li>
+<li>Patients with altered mental status lack capacity — do not accept refusal</li>
+<li>Psychiatric patients may or may not have capacity depending on the specific situation — contact medical control</li>
+<li>Document ALL refusals thoroughly regardless of apparent patient condition</li></ul></div></div>`},
+// PROTOCOLS_END
+];
+
+/* ── App state ── */
+let activeSection = 'all';
+let searchQuery = '';
+
+/* ── Search + filter ── */
+function getVisible(){
+  const q = searchQuery.toLowerCase();
+  return PROTOCOLS.filter(p=>{
+    const secOk = activeSection==='all' || p.section===activeSection;
+    if(!secOk) return false;
+    if(!q) return true;
+    return p.title.toLowerCase().includes(q) ||
+           p.tags.toLowerCase().includes(q) ||
+           p.body.toLowerCase().includes(q);
+  });
+}
+
+function hl(t){
+  if(!searchQuery) return t;
+  const re=new RegExp('('+searchQuery.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');
+  return t.replace(re,'<mark>$1</mark>');
+}
+
+/* ── Render card list ── */
+function render(){
+  const list=document.getElementById('list');
+  const vis=getVisible();
+  if(!vis.length){
+    list.innerHTML='<div class="no-results">No protocols match. Try different terms.</div>';
+    return;
+  }
+  list.innerHTML=vis.map(p=>`
+    <div class="card c-${p.section}" onclick="openProto('${p.id}')" role="button" tabindex="0">
+      <div class="card-hdr">
+        <span class="sec-dot"></span>
+        <span class="card-title">${hl(p.title)}</span>
+        <span class="sec-badge">${p.section==='admin'?'ADMIN':p.section==='medical'?'MED':p.section==='trauma'?'TRAUMA':p.section==='procedures'?'PROC':'MED'}</span>
+      </div>
+      <div class="card-tags">${p.tags.split(' ').slice(0,6).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+    </div>`).join('');
+}
+
+/* ── Open protocol detail ── */
+function openProto(id){
+  const p=PROTOCOLS.find(x=>x.id===id);
+  if(!p) return;
+  const modal=document.getElementById('modal');
+  document.getElementById('modal-title').textContent=p.title;
+  const badge=document.getElementById('modal-badge');
+  badge.textContent=p.section.toUpperCase();
+  badge.style.background=
+    p.section==='medical'?'#1565c0':
+    p.section==='trauma'?'#c62828':
+    p.section==='procedures'?'#6a1b9a':
+    p.section==='medications'?'#2e7d32':'#455a64';
+  document.getElementById('modal-body').innerHTML=p.body;
+  modal.hidden=false;
+  modal.scrollTop=0;
+  history.pushState({proto:id},'','#'+id);
+}
+
+function closeModal(){
+  const modal=document.getElementById('modal');
+  modal.hidden=true;
+  if(location.hash) history.back();
+}
+
+window.addEventListener('popstate',()=>{
+  if(!location.hash) document.getElementById('modal').hidden=true;
+  else openProto(location.hash.slice(1));
+});
+
+if(location.hash){
+  const id=location.hash.slice(1);
+  if(PROTOCOLS.find(x=>x.id===id)) setTimeout(()=>openProto(id),200);
+}
+
+/* ── Department profile hook (future use) ──────────────────────────
+ * A department profile restricts which protocols/medications appear.
+ * Shape: { id: string, name: string, hiddenProtocols: string[],
+ *           notes: {[protocolId]: string} }
+ * Set via: applyDepartment(DEPARTMENTS['king-county'])
+ * Reset via: applyDepartment(null)
+ * ------------------------------------------------------------------ */
+const DEPARTMENTS = {
+  // placeholder — add real department profiles here
+  // 'example': { id:'example', name:'Example EMS', hiddenProtocols:[], notes:{} }
+};
+let activeDept = null;
+function applyDepartment(dept){
+  activeDept = dept;
+  render();
+}
+
+/* ── Provider level filter ── */
+let activeLevel = localStorage.getItem('providerLevel') || 'all';
+function applyLevel(lv){
+  // remove old level class from body
+  document.body.classList.remove('lv-emr','lv-emt','lv-aemt');
+  if(lv !== 'all') document.body.classList.add(lv);
+  activeLevel = lv;
+  localStorage.setItem('providerLevel', lv);
+  document.querySelectorAll('.lvbtn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.lv === lv);
+  });
+}
+// restore saved level on load
+applyLevel(activeLevel);
+
+document.querySelectorAll('.lvbtn').forEach(btn=>{
+  btn.addEventListener('click',()=> applyLevel(btn.dataset.lv));
+});
+
+/* ── Filter tabs ── */
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    activeSection=btn.dataset.s;
+    render();
+  });
+});
+
+/* ── Search ── */
+const si=document.getElementById('search');
+const sc=document.getElementById('sclear');
+si.addEventListener('input',()=>{
+  searchQuery=si.value.trim();
+  sc.hidden=!searchQuery;
+  render();
+});
+sc.addEventListener('click',()=>{
+  si.value='';searchQuery='';sc.hidden=true;si.focus();render();
+});
+
+/* ── Quick access ── */
+document.querySelectorAll('[data-goto]').forEach(btn=>{
+  btn.addEventListener('click',()=>openProto(btn.dataset.goto));
+});
+
+/* ── Back to top ── */
+const tb=document.getElementById('topbtn');
+window.addEventListener('scroll',()=>{tb.hidden=window.scrollY<300},{passive:true});
+tb.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+/* ── Service worker ── */
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
+
+/* ── Init ── */
+render();
+</script>
+</body>
+</html>
