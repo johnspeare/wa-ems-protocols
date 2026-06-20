@@ -130,6 +130,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .card-tags{display:flex;flex-wrap:wrap;gap:4px;padding:0 14px 10px}
 .tag{font-size:11px;padding:2px 7px;border-radius:10px;
   background:var(--bg);color:var(--txt2);border:1px solid var(--bdr)}
+.mlink{color:inherit;text-decoration:underline;text-decoration-style:dotted;
+  text-underline-offset:2px;cursor:pointer;font-weight:inherit}
 
 .no-results{padding:40px 20px;text-align:center;color:var(--txt2);font-size:16px}
 
@@ -309,7 +311,7 @@ body:`<div class="proto-note">⚑ Referenced by every protocol — initiate firs
 <li>A — Airway: open, maintain, protect</li>
 <li>B — Breathing: rate, quality; O₂ to maintain SpO₂ 94–99%</li>
 <li>C — Circulation: pulse rate/quality, skin, hemorrhage control</li>
-<li>D — Disability: LOC (AVPU/GCS), pupils, blood glucose <span class="ws">W*</span></li>
+<li>D — Disability: LOC (<a class="mlink" onclick="openProto('mnemonics');return false;" href="#">AVPU</a>/GCS), pupils, blood glucose <span class="ws">W*</span></li>
 <li>E — Expose / Environment: full exam, prevent hypothermia</li></ul></li>
 <li><strong>Vital Signs</strong> — BP, HR, RR, SpO₂, temp, glucose as indicated</li>
 <li><strong>Transport Decision</strong> — priority, destination per local protocols</li>
@@ -350,7 +352,7 @@ tags:'abdominal back flank pain AAA appendicitis bowel ectopic pregnancy GI kidn
 body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
 <div class="assess">
 <div class="assess-col"><div class="assess-head">History</div>
-<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<div class="sample-note"><a class="mlink" onclick="openProto('mnemonics');return false;" href="#">SAMPLE</a> / <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">OPQRST</a></div><ul>
 <li>Allergies, medications</li><li>Past medical/surgical history</li>
 <li>Last meal; last bowel movement/emesis</li>
 <li>Onset, Palliation/Provocation</li><li>Quality (crampy, constant, sharp)</li>
@@ -389,7 +391,7 @@ tags:'anaphylaxis allergic reaction epinephrine epi hives angioedema stridor sho
 body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
 <div class="assess">
 <div class="assess-col"><div class="assess-head">History</div>
-<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<div class="sample-note"><a class="mlink" onclick="openProto('mnemonics');return false;" href="#">SAMPLE</a> / <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">OPQRST</a></div><ul>
 <li>History of anaphylaxis</li><li>Prescribed / use of EpiPen</li>
 <li>Known allergy / exposure (insect sting, bite)</li>
 <li>New clothing, soap, detergent</li></ul></div>
@@ -432,7 +434,7 @@ tags:'cardiac arrest CPR AED pulseless VFib PEA asystole resuscitation epinephri
 body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
 <div class="assess">
 <div class="assess-col"><div class="assess-head">History</div>
-<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<div class="sample-note"><a class="mlink" onclick="openProto('mnemonics');return false;" href="#">SAMPLE</a> / <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">OPQRST</a></div><ul>
 <li>Events leading to arrest</li><li>Estimated downtime / bystander CPR</li>
 <li>POLST, DNI/R or Living Will</li>
 <li>Hx: CP/SOB (Thrombosis: Pulmonary/MI or Tamponade)</li>
@@ -443,7 +445,7 @@ body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or tran
 <li>Absent heart sounds on auscultation</li>
 <li class="b">Apnea / Agonal Respirations</li>
 <li class="b">Pulseless</li><li class="b">Unresponsive</li></ul></div>
-<div class="assess-col"><div class="assess-head">Differential — Hs &amp; Ts</div><ul>
+<div class="assess-col"><div class="assess-head">Differential — <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">Hs &amp; Ts</a></div><ul>
 <li>Hypovolemia; Hypoxia</li>
 <li>Hydrogen Ions (Acidosis)</li>
 <li>Hyper/Hypokalemia; Hyper/Hypoglycemia</li>
@@ -483,7 +485,7 @@ body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or tran
 <li>Sudden increase in EtCO₂</li>
 <li>Return of pulse; return of normal respirations</li>
 <li>Patient has spontaneous movement</li></ul></div>
-<div class="assess-col"><div class="assess-head">Differential — Hs &amp; Ts</div><ul>
+<div class="assess-col"><div class="assess-head">Differential — <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">Hs &amp; Ts</a></div><ul>
 <li>Hypovolemia; Hypoxia; H⁺ (Acidosis)</li>
 <li>Hyper/Hypokalemia; Hyper/Hypoglycemia</li>
 <li>Hypothermia; Toxins; Tamponade</li>
@@ -511,7 +513,7 @@ tags:'chest pain ACS MI STEMI heart attack angina nitroglycerin aspirin ECG card
 body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
 <div class="assess">
 <div class="assess-col"><div class="assess-head">History</div>
-<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<div class="sample-note"><a class="mlink" onclick="openProto('mnemonics');return false;" href="#">SAMPLE</a> / <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">OPQRST</a></div><ul>
 <li>Time of onset; Palliation/Provocation</li>
 <li>Quality (crampy, constant, sharp, dull)</li>
 <li>Region / Radiation / Referred; Severity (1–10); Time</li>
@@ -558,7 +560,7 @@ tags:'diabetic hypoglycemia hyperglycemia glucose insulin DKA blood sugar oral g
 body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
 <div class="assess">
 <div class="assess-col"><div class="assess-head">History</div>
-<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<div class="sample-note"><a class="mlink" onclick="openProto('mnemonics');return false;" href="#">SAMPLE</a> / <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">OPQRST</a></div><ul>
 <li>Medications (Oral vs. Insulin); Insulin pump</li>
 <li>Alterations or missed doses; Last meal</li>
 <li>Recent illness; Illicit drug use / toxicingestion</li>
@@ -603,7 +605,7 @@ tags:'AMS altered mental status confusion LOC unconscious glucose stroke seizure
 body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
 <div class="assess">
 <div class="assess-col"><div class="assess-head">History</div>
-<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<div class="sample-note"><a class="mlink" onclick="openProto('mnemonics');return false;" href="#">SAMPLE</a> / <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">OPQRST</a></div><ul>
 <li>Hx of Diabetes (self/family)</li><li>Hx cardiac/stroke/seizure</li>
 <li>Hx of Trauma</li><li>Previous/current illicit drug use</li>
 <li>Toxic ingestion; Recent illness; Syncope</li></ul></div>
@@ -615,7 +617,7 @@ body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or tran
 <li>Hypoglycemia (cool, diaphoretic skin, seizure)</li>
 <li>Hyperglycemia (warm, dry skin, Kussmaul resp)</li>
 <li class="b">Shortness of breath; Syncope</li></ul></div>
-<div class="assess-col"><div class="assess-head">Differential — AEIOU-TIPS</div><ul>
+<div class="assess-col"><div class="assess-head">Differential — <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">AEIOU-TIPS</a></div><ul>
 <li>A — Alcohol / Acidosis</li>
 <li>E — Endocrine / Epilepsy / Electrolytes / Encephalopathy</li>
 <li>I — Insulin; O — Opiates / Overdose / Oxygen</li>
@@ -651,7 +653,7 @@ tags:'behavioral psychiatric agitation psychosis suicide homicidal combative del
 body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
 <div class="assess">
 <div class="assess-col"><div class="assess-head">History</div>
-<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<div class="sample-note"><a class="mlink" onclick="openProto('mnemonics');return false;" href="#">SAMPLE</a> / <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">OPQRST</a></div><ul>
 <li>Diabetes; Medic alert tag</li>
 <li>Injury to self or threats to others</li>
 <li>Psychiatric illness / medications</li>
@@ -693,7 +695,7 @@ tags:'bites envenomation snake spider bee sting anaphylaxis rabies tetanus poiso
 body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available<br>Contact Poison Control: <strong>1-800-709-0911</strong><br>Rapid Transport with early alert to receiving facility</div>
 <div class="assess">
 <div class="assess-col"><div class="assess-head">History</div>
-<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<div class="sample-note"><a class="mlink" onclick="openProto('mnemonics');return false;" href="#">SAMPLE</a> / <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">OPQRST</a></div><ul>
 <li>Type of bite/sting; Time/location</li>
 <li>Known allergy/anaphylaxis</li>
 <li>Immunocompromised; Tetanus and Rabies risk</li>
@@ -735,7 +737,7 @@ tags:'pediatric cardiac arrest CPR AED child infant pulseless resuscitation epi 
 body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
 <div class="assess">
 <div class="assess-col"><div class="assess-head">History</div>
-<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<div class="sample-note"><a class="mlink" onclick="openProto('mnemonics');return false;" href="#">SAMPLE</a> / <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">OPQRST</a></div><ul>
 <li>Events leading to arrest; Medical history</li>
 <li>Possibility of foreign body</li>
 <li>Respiratory distress or arrest</li>
@@ -748,7 +750,7 @@ body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or tran
 <li class="b">Pulseless</li>
 <li class="b">Unresponsive</li>
 <li>Absent heart sounds on auscultation</li></ul></div>
-<div class="assess-col"><div class="assess-head">Differential — Hs &amp; Ts</div><ul>
+<div class="assess-col"><div class="assess-head">Differential — <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">Hs &amp; Ts</a></div><ul>
 <li>Hypovolemia; Hypoxia; H⁺ (Acidosis)</li>
 <li>Hyper/Hypokalemia; Hyper/Hypoglycemia</li>
 <li>Hypothermia; Toxins; Tamponade</li>
@@ -787,7 +789,7 @@ body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or tran
 <li>Sudden increase in EtCO₂</li>
 <li>Return of pulse; Return of normal respirations</li>
 <li>Patient has spontaneous movement</li></ul></div>
-<div class="assess-col"><div class="assess-head">Differential — Hs &amp; Ts</div><ul>
+<div class="assess-col"><div class="assess-head">Differential — <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">Hs &amp; Ts</a></div><ul>
 <li>Hypovolemia; Hypoxia; H⁺ (Acidosis)</li>
 <li>Hyper/Hypokalemia; Hyper/Hypoglycemia</li>
 <li>Hypothermia; Toxins; Tamponade</li>
@@ -816,7 +818,7 @@ tags:'drowning submersion near drowning water CPAP hypothermia barotrauma decomp
 body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
 <div class="assess">
 <div class="assess-col"><div class="assess-head">History</div>
-<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<div class="sample-note"><a class="mlink" onclick="openProto('mnemonics');return false;" href="#">SAMPLE</a> / <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">OPQRST</a></div><ul>
 <li>Aspiration of fluid</li>
 <li>Submersion — regardless of depth</li>
 <li>Possible history of trauma</li>
@@ -864,7 +866,7 @@ tags:'heat stroke heat exhaustion hyperthermia hot temperature cooling heat cram
 body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
 <div class="assess">
 <div class="assess-col"><div class="assess-head">History</div>
-<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<div class="sample-note"><a class="mlink" onclick="openProto('mnemonics');return false;" href="#">SAMPLE</a> / <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">OPQRST</a></div><ul>
 <li>Age; Exposure to increased temperature/humidity</li>
 <li>Time and duration of exposure; Extreme exertion</li>
 <li>Medications (anticholinergics, anti-seizure, etc.)</li>
@@ -909,7 +911,7 @@ tags:'hypothermia cold frostbite VFib rewarming temperature exposure drowning co
 body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
 <div class="assess">
 <div class="assess-col"><div class="assess-head">History</div>
-<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<div class="sample-note"><a class="mlink" onclick="openProto('mnemonics');return false;" href="#">SAMPLE</a> / <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">OPQRST</a></div><ul>
 <li>Exposure temperature / wind chill</li>
 <li>Length of exposure</li>
 <li>Drowning/submersion victim</li>
@@ -1046,7 +1048,7 @@ tags:'obstetric gynecological childbirth delivery postpartum pregnancy ectopic p
 body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
 <div class="assess">
 <div class="assess-col"><div class="assess-head">History</div>
-<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<div class="sample-note"><a class="mlink" onclick="openProto('mnemonics');return false;" href="#">SAMPLE</a> / <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">OPQRST</a></div><ul>
 <li>Pregnancy/Date of LMP/Due date; Gravida/Para</li>
 <li>Hx pregnancy complications; Prenatal care</li>
 <li>Smoking, alcohol, substance abuse</li>
@@ -1094,13 +1096,13 @@ tags:'overdose OD toxicology poisoning narcan naloxone opioid carbon monoxide or
 body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available<br>Contact Poison Control: <strong>1-800-709-0911</strong></div>
 <div class="assess">
 <div class="assess-col"><div class="assess-head">History</div>
-<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<div class="sample-note"><a class="mlink" onclick="openProto('mnemonics');return false;" href="#">SAMPLE</a> / <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">OPQRST</a></div><ul>
 <li>Ingestion or suspected ingestion of potentially toxic substance</li>
 <li>Substance ingested, route, quantity; Time of ingestion</li>
 <li>Reason (suicidal, accidental, criminal)</li>
 <li>Available medications in home; Home remedies given prior</li></ul></div>
 <div class="assess-col"><div class="assess-head">Signs / Symptoms</div><ul>
-<li class="b">SLUDGE and DUMBBELS</li>
+<li class="b"><a class="mlink" onclick="openProto('mnemonics');return false;" href="#">SLUDGE</a> and <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">DUMBBELS</a></li>
 <li class="b">Mental status changes</li>
 <li class="b">Hypotension / Hypertension</li>
 <li>Decreased respiratory rate</li>
@@ -1120,7 +1122,7 @@ body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or tran
 <li>Adult: Naloxone 0.4–4 mg IN; repeat q2–3 min up to 10 mg or until airway maintained and adequate breathing</li>
 <li>Pediatric: Naloxone 0.1 mg/kg IN (max 2 mg/dose); repeat q2–3 min up to 10 mg; do NOT give to newborns</li></ul></li>
 <li><strong>Carbon Monoxide:</strong> 100% O₂ NRB or CPAP; determine CO level with commercial device if available; SpCO 3–25% with neuro symptoms → treat and transport; SpCO &gt;25% → contact MC for diversion to hyperbaric chamber</li>
-<li><strong>Organophosphates (SLUDGE):</strong> Prepare for copious secretions; Atropine nerve agent auto-injector; Pralidoxime Chloride (2-PAM) adult 1 auto-injector (600 mg) IM into thigh</li></ul></div>
+<li><strong>Organophosphates (<a class="mlink" onclick="openProto('mnemonics');return false;" href="#">SLUDGE</a>):</strong> Prepare for copious secretions; Atropine nerve agent auto-injector; Pralidoxime Chloride (2-PAM) adult 1 auto-injector (600 mg) IM into thigh</li></ul></div>
 <div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
 <li>Consider ECG / 12-lead if available</li>
 <li><span class="ws">W*</span> Consider End-Tidal CO₂ if available</li>
@@ -1196,7 +1198,7 @@ tags:'respiratory distress asthma COPD albuterol bronchospasm wheezing shortness
 body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
 <div class="assess">
 <div class="assess-col"><div class="assess-head">History</div>
-<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<div class="sample-note"><a class="mlink" onclick="openProto('mnemonics');return false;" href="#">SAMPLE</a> / <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">OPQRST</a></div><ul>
 <li>Asthma; COPD (emphysema, bronchitis)</li>
 <li>Congestive heart failure</li>
 <li>Home treatment (O₂, nebulizer)</li>
@@ -1240,7 +1242,7 @@ tags:'sepsis infection septic shock fever tachycardia hypotension altered mental
 body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
 <div class="assess">
 <div class="assess-col"><div class="assess-head">History</div>
-<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<div class="sample-note"><a class="mlink" onclick="openProto('mnemonics');return false;" href="#">SAMPLE</a> / <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">OPQRST</a></div><ul>
 <li>Fever, known infection</li>
 <li>Immunosuppression (HIV, chemotherapy)</li>
 <li>Indwelling medical device; Recent surgery/hospital stay</li>
@@ -1278,7 +1280,7 @@ tags:'seizure febrile epilepsy status epilepticus tonic clonic postictal glucose
 body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
 <div class="assess">
 <div class="assess-col"><div class="assess-head">History</div>
-<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<div class="sample-note"><a class="mlink" onclick="openProto('mnemonics');return false;" href="#">SAMPLE</a> / <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">OPQRST</a></div><ul>
 <li>Number and duration of seizures; Head trauma</li>
 <li>Hx seizure or status epilepticus</li>
 <li>Medication compliance/dosage; Anticoagulant therapy</li>
@@ -1344,7 +1346,7 @@ tags:'shock hypotension hypoperfusion fluid resuscitation IV saline tachycardia 
 body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
 <div class="assess">
 <div class="assess-col"><div class="assess-head">History</div>
-<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<div class="sample-note"><a class="mlink" onclick="openProto('mnemonics');return false;" href="#">SAMPLE</a> / <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">OPQRST</a></div><ul>
 <li>Allergic reaction; Bleeding (GI or vaginal)</li>
 <li>Cardiac ischemia (MI, CHF)</li>
 <li>Hx of Adrenal Insufficiency; Medications</li>
@@ -1389,7 +1391,7 @@ tags:'stroke TIA CVA neurological FAST BEFAST LAMS aphasia weakness facial droop
 body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
 <div class="assess">
 <div class="assess-col"><div class="assess-head">History</div>
-<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<div class="sample-note"><a class="mlink" onclick="openProto('mnemonics');return false;" href="#">SAMPLE</a> / <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">OPQRST</a></div><ul>
 <li>Previous CVA, TIA's</li>
 <li>Previous cardiac/vascular surgery</li>
 <li>Diabetes; Hypertension, CAD; Atrial fibrillation</li>
@@ -1412,7 +1414,7 @@ body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or tran
 <div class="mgmt">
 <div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
 <li>Initiate Universal Patient Care protocol</li>
-<li>Perform FAST, BEFAST, or LAMS exam</li>
+<li>Perform <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">FAST</a>, <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">BEFAST</a>, or <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">LAMS</a> exam</li>
 <li>Determine LAST KNOWN WELL TIME — critical</li>
 <li>Position with head and chest elevated or position of comfort</li>
 <li>Check temperature and pulse oximetry</li>
@@ -1420,7 +1422,7 @@ body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or tran
 <li><span class="ws">W*</span> Capillary glucose; treat hypoglycemia per Altered Mental Status protocol</li>
 <li>Give nothing by mouth unless hypoglycemic; suction as necessary</li></ul></div>
 <div class="lv emt-lv"><div class="lv-tag emt-tag">EMT</div><ul>
-<li>Perform FAST exam, BEFAST, and LAMS Score</li>
+<li>Perform <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">FAST</a> exam, <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">BEFAST</a>, and <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">LAMS</a> Score</li>
 <li>Contact appropriate receiving medical facility</li>
 <li>Transport to closest appropriate medical facility</li>
 <li>Notify receiving facility of STOKE Activation as soon as possible</li></ul></div>
@@ -1443,7 +1445,7 @@ tags:'syncope fainting dizziness weakness LOC loss consciousness vasovagal ortho
 body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
 <div class="assess">
 <div class="assess-col"><div class="assess-head">History</div>
-<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<div class="sample-note"><a class="mlink" onclick="openProto('mnemonics');return false;" href="#">SAMPLE</a> / <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">OPQRST</a></div><ul>
 <li>Activity prior to episode (exertion, urinating/defecating)</li>
 <li>Blood loss (GI, spontaneous abortion) / LMP</li>
 <li>Chest pain/SOB; Diabetes; Trauma</li>
@@ -1486,10 +1488,10 @@ body:`<div class="mgmt">
 <li><strong>A — Airway:</strong> Assess patency; ask basic questions (stridor, ease of air movement); look for injuries causing obstruction (unstable facial fractures, expanding neck hematoma, blood/vomitus, facial burns)</li>
 <li><strong>R — Respiratory/Breathing:</strong> Rate and pattern; assess for tension pneumothorax; chest wall symmetry; bilateral breath sounds; cover penetrating chest wounds with commercial chest seal (or occlusive dressing taped on 3 sides)</li>
 <li><strong>C — Circulation:</strong> Assess BP and HR</li>
-<li><strong>H — Head Injury:</strong> GCS/AVPU and pupils; gross motor assessment; signs of TBI with herniation (unequal pupils, lateralizing motor signs, posturing)</li>
+<li><strong>H — Head Injury:</strong> GCS/<a class="mlink" onclick="openProto('mnemonics');return false;" href="#">AVPU</a> and pupils; gross motor assessment; signs of TBI with herniation (unequal pupils, lateralizing motor signs, posturing)</li>
 <li><strong>H — Hypothermia Prevention:</strong> Prevent further heat loss; maintain normal body temperature</li></ul></div>
 <div class="lv emr-lv"><div class="lv-tag emr-tag">EMR</div><ul>
-<li>Initiate Universal Patient Care protocol; Initiate MARCHH</li>
+<li>Initiate Universal Patient Care protocol; Initiate <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">MARCHH</a></li>
 <li>Massive hemorrhage: stop severe external/extremity hemorrhage with tourniquet or hemostatic gauze wound packing; roll patient to examine back</li>
 <li>Impaled objects: leave in place; stabilize by building up around object with multi-trauma dressings</li>
 <li>Immobilize suspected fractures/dislocations; severe deformity with distal cyanosis/pulselessness → gentle in-line traction before splinting</li>
@@ -1711,7 +1713,7 @@ body:`<div class="mgmt">
 <li>Airway may be compromised by fractures or bleeding; lost teeth not recovered on scene may be in the airway</li>
 <li>Avulsed teeth can be re-implanted successfully if done very shortly after injury</li>
 <li>For penetrating eye injuries: do NOT remove foreign bodies; splint in place; cover uninjured eye or ask patient to close it</li>
-<li>Head injury severity: Mild GCS 14–15 (AVPU=A); Moderate GCS 9–13 (AVPU=V); Severe GCS 3–8 (AVPU=P or U)</li>
+<li>Head injury severity: Mild GCS 14–15 (<a class="mlink" onclick="openProto('mnemonics');return false;" href="#">AVPU</a>=A); Moderate GCS 9–13 (AVPU=V); Severe GCS 3–8 (AVPU=P or U)</li>
 <li>EtCO₂ target 40 mmHg (range 35–45); avoid hyperventilation, overventilation, hypocapnia</li></ul></div></div>`},
 
 {id:'pelvis-trauma',title:'Pelvis Trauma',section:'trauma',
@@ -2359,7 +2361,7 @@ tags:'general illness sick fever abdominal distension altered consciousness naus
 body:`<div class="als-note">⚡ Bold = Consider Paramedic (ALS) eval and/or transport if available</div>
 <div class="assess">
 <div class="assess-col"><div class="assess-head">History</div>
-<div class="sample-note">SAMPLE / OPQRST</div><ul>
+<div class="sample-note"><a class="mlink" onclick="openProto('mnemonics');return false;" href="#">SAMPLE</a> / <a class="mlink" onclick="openProto('mnemonics');return false;" href="#">OPQRST</a></div><ul>
 <li>Duration; Past medical history; Last oral intake</li>
 <li>Medications; Immunocompromised</li>
 <li>Bloody emesis/diarrhea; Menstrual history</li>
